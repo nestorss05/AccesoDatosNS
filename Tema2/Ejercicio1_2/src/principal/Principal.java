@@ -26,19 +26,19 @@ public class Principal {
 		System.out.println(linea); // Codigo a cambiar
 		if (d.exists()) {
 			File f = new File("C:/Users/nsanchez/"+linea+"/index.html");
-			crearWeb(f);
+			crearWeb(f, d);
 		} else {
 			System.out.println("ERROR: el directorio no existe");
 		}
 		
 	}
 	
-	private static void crearWeb(File f) {
+	private static void crearWeb(File f, File d) {
 		String web = "";
 		if (!f.exists()) {
 			web += "<html>\n";
 			web += "<head>\n";
-			web += "<title>"+f.getParent()+"</title>\n";
+			web += "<title>"+d.getName()+"</title>\n";
 			web += "</head>\n";
 			web += "<body>\n";
 			web += "<h1>"+f.getParent()+"</h1>\n";
