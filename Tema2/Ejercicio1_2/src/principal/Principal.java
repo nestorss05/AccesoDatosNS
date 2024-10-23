@@ -23,7 +23,6 @@ public class Principal {
 	
 	private static void leerDir(String linea) {
 		File d = new File("C:/Users/nsanchez/"+linea);
-		System.out.println(linea); // Codigo a cambiar
 		if (d.exists()) {
 			File f = new File("C:/Users/nsanchez/"+linea+"/index.html");
 			crearWeb(f, d);
