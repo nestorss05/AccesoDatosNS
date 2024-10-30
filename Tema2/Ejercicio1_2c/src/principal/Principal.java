@@ -6,49 +6,49 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Principal {
 
 	public static void main(String[] args) {
-		
-		try (FileReader fr = new FileReader("src/ficheros/palabras.txt")) {
+
+		try (FileReader fr = new FileReader("src/ficheros/ordenadas1.txt")) {
 			BufferedReader br = new BufferedReader(fr);
 			String linea;
-			while ((linea=br.readLine())!=null) {
-				leerDir(linea);
+			String contenido = "";
+			while ((linea = br.readLine()) != null) {
+				contenido += linea;
 			}
+			leerDir(contenido);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	private static void leerDir(String linea) {
-		File d = new File("C:/Users/nsanchez/OutputNS");
-		if (d.exists()) {
-			File f = new File("C:/Users/nsanchez/OutputNS/palabrasOrdenadas.txt");
-			crearFichero(f, linea);
-		} else {
-			System.out.println("ERROR: el directorio no existe"); // Llega aqui
-		}
-		
+		File f = new File("src/ficheros/palabrasOrdenadas.txt");
+		crearFichero(f, linea);
 	}
 
 	private static void crearFichero(File f, String linea) {
-		
+
 		String[] palabras = linea.split("(?=[A-Z])");
+		Arrays.sort(palabras);
 		String fraseFinal = "";
-		for (String palabra: palabras) {
+		for (String palabra : palabras) {
 			fraseFinal += palabra + "\n";
 		}
-		try{
+		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 			bw.write(fraseFinal);
 			bw.close();
-		} catch (IOException ioe){
-		    ioe.printStackTrace();
+			System.out.println("Se han ordenado las palabras correctamente");
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+			System.err.println("ERROR: no se ha podido crear el fichero");
 		}
-		
+
 	}
 
 }
