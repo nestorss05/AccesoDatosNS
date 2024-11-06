@@ -6,13 +6,24 @@ import java.io.RandomAccessFile;
 
 public class Ejercicio2 {
 
-	public static void leerFichAleatorio() throws IOException {
+	public static void leerFichAleatorio(String info) throws IOException {
 		File fichero = new File("src/ficheros/lectura2.txt");
-		RandomAccessFile file = new RandomAccessFile(fichero, "r");
-			
+		RandomAccessFile file = new RandomAccessFile(fichero, "rw");
+		file.setLength(0); // Vacia todo		
+		
 		int posicion = 0;
 		String letra = "";
 
+		file.writeBytes(info);
+		
+		int letraLeida; // Letra leida
+        
+        // Lee letra por letra el archivo
+        while ((letraLeida = file.read()) != -1) {
+            file.write(letraLeida);
+            file.write(System.lineSeparator().getBytes()); // Salto de linea
+        }
+		
 		while (file.getFilePointer() < file.length()) {
 			
 			file.seek(posicion); // nos posicionamos en posicion

@@ -6,19 +6,23 @@ import java.io.RandomAccessFile;
 
 public class Ejercicio3 {
 	
-	public static void leerFichAleatorio() throws IOException {
+	public static void leerFichAleatorio(String info) throws IOException {
 		File fichero = new File("src/ficheros/lectura3.txt");
-		RandomAccessFile file = new RandomAccessFile(fichero, "r");
-			
+		RandomAccessFile file = new RandomAccessFile(fichero, "rw");
+		file.setLength(0); // Vacia todo		
+		
 		int posicion = 0;
-		String letra = "";
+		file.writeBytes(info); // Inserta la informacion introducida por pantalla
+		
+		String letraLeida = "";
+		file.seek(0); // Debo posicionarme para que el programa entre al bucle
 
 		while (file.getFilePointer() < file.length()) {
 			
 			file.seek(posicion); // nos posicionamos en posicion
-			letra = file.readLine();
+			letraLeida = file.readLine();
 			System.out.println("Leido");
-			escribirFichAleatorio(letra);
+			escribirFichAleatorio(letraLeida);
 			posicion = posicion + 2;
 
 		} // fin bucle while

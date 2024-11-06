@@ -6,24 +6,26 @@ import java.io.RandomAccessFile;
 
 public class Ejercicio1 {
 
-	public static void leerFichAleatorio() throws IOException {
-		File fichero = new File("src/ficheros/lectura.txt");
-		RandomAccessFile file = new RandomAccessFile(fichero, "r");
+	public static void leerFichAleatorio(String info) throws IOException {
+		if (info.length() != 1) {
+			System.err.println("ERROR: no se ha insertado ninguna letra o caracter o se ha insertado una palabra");
+		} else {
+			File fichero = new File("src/ficheros/lectura.txt");
+			RandomAccessFile file = new RandomAccessFile(fichero, "rw");
 			
-		int posicion = 0;
-		String letra = "";
-
-		while (file.getFilePointer() < file.length()) {
+			file.setLength(0); // Vacia todo	
+			int posicion = 0; // Establece posicion a 0
+			file.writeBytes(info); // Inserta la informacion introducida por pantalla
+			
+			String letraLeida = "";
 			
 			file.seek(posicion); // nos posicionamos en posicion
-			letra = file.readLine();
+			letraLeida = file.readLine();
 			System.out.println("Leido");
-			escribirFichAleatorio(letra);
-			posicion = posicion + 2;
+			escribirFichAleatorio(letraLeida);
 
-		} // fin bucle while
-
-		file.close(); // cerrar fichero
+			file.close(); // cerrar fichero
+		}
 	}
 
 	private static void escribirFichAleatorio(String linea) throws IOException {
