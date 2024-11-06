@@ -30,6 +30,7 @@ public class Ejercicio1 {
 		File fichero = new File("src/ficheros/escritura.txt");
 		// declara el fichero de acceso aleatorio
 		RandomAccessFile file = new RandomAccessFile(fichero, "rw");
+		file.setLength(0); // Vacia todo
 		StringBuffer buffer = null; // buffer para almacenar letra
 		
 		for (int i = 1; i <= 5; i++) { // recorro los arrays

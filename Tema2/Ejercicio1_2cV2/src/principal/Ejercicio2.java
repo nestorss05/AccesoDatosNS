@@ -30,6 +30,7 @@ public class Ejercicio2 {
 		File fichero = new File("src/ficheros/escritura2.txt");
 		// declara el fichero de acceso aleatorio
 		RandomAccessFile file = new RandomAccessFile(fichero, "rw");
+		file.setLength(0); // Vacia todo
 		String inversa = "";
 		for(int i = linea.length()-1; i>=0; i--)
 	    {
