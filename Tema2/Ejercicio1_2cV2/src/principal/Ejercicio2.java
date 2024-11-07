@@ -9,45 +9,43 @@ public class Ejercicio2 {
 	public static void leerFichAleatorio(String info) throws IOException {
 		File fichero = new File("src/ficheros/lectura2.txt");
 		RandomAccessFile file = new RandomAccessFile(fichero, "rw");
-		file.setLength(0); // Vacia todo		
+			
+		file.setLength(0); // Vacia todo
 		
-		int posicion = 0;
-		String letra = "";
+		// rellena el fichero con cada caracter de la frase mediante un For y un charAt
+		for (int i = 0; i < info.length(); i++) {
+			file.writeBytes(info.charAt(i) + "\n");
+		}
+		
+		long posicion = file.length() - 1;
+		String frase = "";
 
-		file.writeBytes(info);
-		
-		int letraLeida; // Letra leida
-        
-        // Lee letra por letra el archivo
-        while ((letraLeida = file.read()) != -1) {
-            file.write(letraLeida);
-            file.write(System.lineSeparator().getBytes()); // Salto de linea
-        }
-		
-		while (file.getFilePointer() < file.length()) {
+		while (posicion >= 0) {
 			
 			file.seek(posicion); // nos posicionamos en posicion
-			letra = file.readLine();
-			System.out.println("Leido");
-			escribirFichAleatorio(letra);
-			posicion = posicion + 2;
+			char caracter = (char) file.readByte();  // Leer el byte como carácter
+
+            // Añadir el carácter a la cadena (evitar el salto de línea)
+            if (caracter != '\n' && caracter != '\r') {
+                frase = frase + caracter;
+            } else {
+            	frase = frase + " ";
+            }
+            
+			posicion--;
 
 		} // fin bucle while
 
 		file.close(); // cerrar fichero
+		escribirFichAleatorio(frase.trim()); // escribe el fichero
 	}
 
 	private static void escribirFichAleatorio(String linea) throws IOException {
 		File fichero = new File("src/ficheros/escritura2.txt");
 		// declara el fichero de acceso aleatorio
 		RandomAccessFile file = new RandomAccessFile(fichero, "rw");
-		file.setLength(0); // Vacia todo
-		String inversa = "";
-		for(int i = linea.length()-1; i>=0; i--)
-	    {
-			inversa = inversa + linea.charAt(i);
-	    }
-		file.writeChars(inversa);// insertar frase
+
+		file.writeChars(linea);// insertar frase
 		file.close(); // cerrar fichero
 		System.out.println("Escrito");
 	}
