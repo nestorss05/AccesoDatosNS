@@ -1,237 +1,229 @@
 package main;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DatabaseDAL {
-
-	private static String darDatos() {
-		String frase = "insert into persona (id, nombre, apellido, edad) values (1, 'Aubrey', 'De Gogay', 1);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (2, 'Pete', 'Birkby', 2);\r\n" // Da error a partir de aqui
-				+ "insert into persona (id, nombre, apellido, edad) values (3, 'Beitris', 'Rodliff', 3);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (4, 'Pauly', 'Treweela', 4);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (5, 'Alverta', 'McKeever', 5);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (6, 'Tannie', 'Howis', 6);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (7, 'Tina', 'O''Loughlin', 7);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (8, 'Maiga', 'Royste', 8);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (9, 'Franny', 'Trump', 9);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (10, 'Emanuele', 'Bram', 10);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (11, 'Brendan', 'Gutman', 11);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (12, 'Marie-ann', 'Radley', 12);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (13, 'Leigh', 'Taberner', 13);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (14, 'Herbie', 'Farlane', 14);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (15, 'Cordie', 'Romei', 15);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (16, 'Jemmy', 'McWhinnie', 16);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (17, 'Maurizio', 'Gillis', 17);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (18, 'Brendin', 'Alexandrescu', 18);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (19, 'Raychel', 'Brouncker', 19);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (20, 'Darsey', 'Keeffe', 20);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (21, 'Krispin', 'Waszczykowski', 21);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (22, 'Sim', 'Laborda', 22);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (23, 'Linette', 'Labone', 23);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (24, 'Lorilee', 'McNeill', 24);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (25, 'Donall', 'Beadel', 25);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (26, 'Ange', 'Hast', 26);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (27, 'Hurlee', 'Coskerry', 27);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (28, 'Arlyne', 'Everix', 28);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (29, 'Michele', 'Aggs', 29);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (30, 'Shara', 'MacQuarrie', 30);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (31, 'Zack', 'Blanko', 31);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (32, 'Shanon', 'Snowdon', 32);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (33, 'Allin', 'Kneeshaw', 33);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (34, 'Cassandra', 'Montague', 34);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (35, 'Karleen', 'Sulley', 35);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (36, 'Torie', 'Falconar', 36);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (37, 'Donnell', 'Palfreman', 37);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (38, 'Brig', 'Hawkings', 38);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (39, 'Pail', 'Hebblewhite', 39);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (40, 'Rustin', 'Sproson', 40);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (41, 'Peyter', 'Altamirano', 41);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (42, 'Georgeanna', 'Wybern', 42);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (43, 'Jens', 'Addeycott', 43);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (44, 'Normand', 'Feldon', 44);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (45, 'Neddy', 'Kendrick', 45);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (46, 'Kyrstin', 'Astridge', 46);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (47, 'Constantin', 'Frosdick', 47);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (48, 'Felita', 'Bascomb', 48);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (49, 'Isabelita', 'Boldison', 49);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (50, 'Rahel', 'Munden', 50);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (51, 'Idalia', 'Pengelly', 51);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (52, 'Vittoria', 'Capelle', 52);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (53, 'Lacey', 'Jacobowicz', 53);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (54, 'Inger', 'Rogliero', 54);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (55, 'Tawnya', 'Grisbrook', 55);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (56, 'Hugibert', 'Twigge', 56);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (57, 'Kristoforo', 'Greve', 57);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (58, 'Nicoline', 'Caress', 58);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (59, 'Alameda', 'Bullivant', 59);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (60, 'Ainslie', 'Galer', 60);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (61, 'Sissy', 'Galliford', 61);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (62, 'Hershel', 'Jura', 62);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (63, 'Silvanus', 'Mateo', 63);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (64, 'Lyndsay', 'Ceillier', 64);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (65, 'Dirk', 'Chavey', 65);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (66, 'Reba', 'Januszkiewicz', 66);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (67, 'Derby', 'Escreet', 67);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (68, 'Paul', 'Pitone', 68);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (69, 'Aloise', 'Tidbury', 69);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (70, 'Charlotte', 'Embling', 70);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (71, 'Vasili', 'McMorland', 71);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (72, 'Brady', 'Ealles', 72);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (73, 'Martie', 'Tanti', 73);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (74, 'Nissa', 'Lighterness', 74);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (75, 'Eddy', 'Fieller', 75);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (76, 'Sonny', 'Ringham', 76);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (77, 'Cordell', 'Prewer', 77);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (78, 'Pattin', 'Jurick', 78);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (79, 'Georgetta', 'Simester', 79);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (80, 'Ike', 'Doyle', 80);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (81, 'Hammad', 'Hatwell', 81);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (82, 'Tatiania', 'Sumpner', 82);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (83, 'Levi', 'De Witt', 83);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (84, 'Gustave', 'Smewin', 84);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (85, 'Goran', 'Beausang', 85);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (86, 'Crystal', 'Selvey', 86);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (87, 'Starlene', 'Halshaw', 87);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (88, 'Theresita', 'Pancoust', 88);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (89, 'Eal', 'Gott', 89);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (90, 'Manya', 'Brandino', 90);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (91, 'Yolanda', 'Giles', 91);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (92, 'Dougy', 'Roe', 92);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (93, 'Kareem', 'Tuson', 93);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (94, 'Verne', 'Carlan', 94);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (95, 'Spencer', 'Timmis', 95);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (96, 'Sydney', 'Dunwoody', 96);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (97, 'Mariellen', 'Peterkin', 97);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (98, 'Alexander', 'Gunney', 98);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (99, 'Elwyn', 'Haugeh', 99);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (100, 'Kendell', 'Craddy', 100);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (101, 'Zacharie', 'Prevost', 101);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (102, 'Sile', 'Dorkin', 102);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (103, 'Allan', 'Coonihan', 103);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (104, 'Mercy', 'Lochrie', 104);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (105, 'Emlyn', 'Pusill', 105);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (106, 'Gwenny', 'Franz', 106);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (107, 'Ashlie', 'Nortunen', 107);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (108, 'Calypso', 'Gemelli', 108);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (109, 'Margery', 'Rayman', 109);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (110, 'Bendick', 'Klausewitz', 110);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (111, 'Delmar', 'Lippitt', 111);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (112, 'Leeland', 'Tennison', 112);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (113, 'Nicole', 'Ridpath', 113);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (114, 'Dela', 'Ilott', 114);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (115, 'Ruddie', 'Stiegers', 115);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (116, 'Davide', 'Philippart', 116);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (117, 'Delbert', 'Fishlee', 117);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (118, 'Ynes', 'Kelloway', 118);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (119, 'Steffi', 'Petteford', 119);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (120, 'Alfie', 'Raw', 120);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (121, 'Stavros', 'Fernandes', 121);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (122, 'Abbye', 'Standall', 122);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (123, 'Loella', 'Heers', 123);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (124, 'Frederique', 'Robinet', 124);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (125, 'Ariela', 'Vannuccini', 125);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (126, 'Sari', 'Gaylor', 126);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (127, 'Gene', 'Gelly', 127);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (128, 'Pat', 'Watsham', 128);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (129, 'Freddie', 'Caulcutt', 129);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (130, 'Delphine', 'Gareisr', 130);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (131, 'Nina', 'Dalliwatr', 131);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (132, 'Raddie', 'Pinchback', 132);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (133, 'Dani', 'Gypson', 133);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (134, 'Courtnay', 'Fenge', 134);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (135, 'Doug', 'Coller', 135);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (136, 'Janice', 'Seaking', 136);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (137, 'Farleigh', 'Alston', 137);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (138, 'Dahlia', 'Costock', 138);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (139, 'Zerk', 'Saltsberg', 139);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (140, 'Shannah', 'McNysche', 140);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (141, 'Cinderella', 'Elderidge', 141);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (142, 'Kore', 'Simonelli', 142);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (143, 'Marcella', 'Byatt', 143);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (144, 'Hayley', 'Kail', 144);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (145, 'Nyssa', 'Leyzell', 145);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (146, 'Phedra', 'Charrette', 146);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (147, 'Bryant', 'Fesby', 147);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (148, 'Gan', 'Camoletto', 148);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (149, 'Lindsay', 'Hulland', 149);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (150, 'Dinah', 'Caustic', 150);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (151, 'Tammi', 'Berks', 151);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (152, 'Leann', 'Stubbe', 152);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (153, 'Abdul', 'O''Fihily', 153);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (154, 'Maggi', 'Ricson', 154);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (155, 'Cull', 'Lowle', 155);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (156, 'Adelaida', 'Bourdon', 156);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (157, 'Ulrikaumeko', 'Lesslie', 157);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (158, 'Olenka', 'Blood', 158);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (159, 'Yoko', 'Cookman', 159);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (160, 'Maye', 'Uttermare', 160);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (161, 'Cele', 'Lammie', 161);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (162, 'Corrie', 'Tallow', 162);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (163, 'Octavius', 'Crinage', 163);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (164, 'Avie', 'Byer', 164);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (165, 'Waylon', 'Novotna', 165);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (166, 'Emelda', 'Diss', 166);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (167, 'Case', 'Zanutti', 167);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (168, 'Duncan', 'Hollyer', 168);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (169, 'Terrye', 'Dyka', 169);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (170, 'Alanah', 'Whatmough', 170);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (171, 'Lisa', 'Weathey', 171);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (172, 'Sonnnie', 'Duff', 172);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (173, 'Mariel', 'Gunson', 173);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (174, 'Uta', 'Routh', 174);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (175, 'Danella', 'Rule', 175);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (176, 'Jodie', 'Myner', 176);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (177, 'Munroe', 'Mansour', 177);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (178, 'Wendell', 'Cloney', 178);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (179, 'Ardys', 'Thorowgood', 179);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (180, 'Egan', 'Drowsfield', 180);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (181, 'Loria', 'Keyser', 181);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (182, 'Elsworth', 'Isaacs', 182);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (183, 'Ransell', 'Weald', 183);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (184, 'Kris', 'Highman', 184);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (185, 'Rhys', 'Aird', 185);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (186, 'Lurline', 'McInulty', 186);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (187, 'Gilligan', 'Longbothom', 187);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (188, 'Marge', 'Hallitt', 188);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (189, 'Meris', 'Braniff', 189);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (190, 'Jourdan', 'Stollard', 190);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (191, 'Bob', 'Nottingam', 191);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (192, 'Collette', 'Tatlock', 192);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (193, 'Earvin', 'Northrop', 193);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (194, 'Cyrus', 'Robken', 194);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (195, 'Korrie', 'Colquite', 195);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (196, 'Kath', 'Schrinel', 196);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (197, 'Cilka', 'MacMenemy', 197);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (198, 'Lindy', 'Belsey', 198);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (199, 'Bernie', 'Rizzini', 199);\r\n"
-				+ "insert into persona (id, nombre, apellido, edad) values (200, 'Robert', 'Meriot', 200);\r\n"
-				+ "";
-		return frase;
-	}
 	
 	public static void crearDB(Connection conn, java.sql.Statement stmt) throws SQLException {
 		try {
+			String filePath = "src/txt/inserts.txt";
             // Creamos un nuevo objeto con la conexión
             stmt = conn.createStatement();
-            // Definimos la sentencia de crear una nueva base de datos
-            String sql = "CREATE TABLE persona (id INT, nombre VARCHAR(50), apellido VARCHAR(50), edad INT);\n";
             
-            // Ejecutar la sentencia
+            String sql = "drop table if exists persona";
             stmt.executeUpdate(sql);
             
-            sql = darDatos();
+            // Definimos la sentencia de crear una nueva base de datos y ejecutarla
+            sql = "CREATE TABLE persona (id INT, nombre VARCHAR(50), apellido VARCHAR(50), edad INT);\n";
             stmt.executeUpdate(sql);
+            
+            try {
+    			BufferedReader br = new BufferedReader(new FileReader(filePath));
+    			String line;
+
+                // Leer el archivo línea por línea
+                while ((line = br.readLine()) != null) {
+                    if (!line.trim().isEmpty()) { // Ignorar líneas vacías
+                    	sql = line;
+                        stmt.executeUpdate(sql);
+                    }
+                }
+                
+                System.out.println("Los inserts han sido exitosos");
+                
+                br.close();
+    		} catch (FileNotFoundException e) {
+    			e.printStackTrace();
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}
+            
         } catch(SQLException se) {
             //Gestionamos los posibles errores que puedan surgir durante la ejecucion de la insercion
             se.printStackTrace();
         } catch(Exception e) {
             //Gestionamos los posibles errores
             e.printStackTrace();
-        } finally{
-            //Paso 5. Cerrar el objeto en uso y la conexión
+        } finally {
             stmt.close();
-            conn.close();
+        }
+	}
+	
+	public static void selectAllOrdAp(Connection conn) throws SQLException {
+		String sql = "SELECT * FROM persona ORDER BY apellido";
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		ResultSet resultado = pstmt.executeQuery();
+		while(resultado.next()){
+			System.out.println("---------------------------------------------");
+			System.out.println("ID: " + resultado.getInt("id"));
+			System.out.println("Nombre: " + resultado.getString("nombre"));
+			System.out.println("Apellidos: " + resultado.getString("apellido"));
+			System.out.println("Edad: " + resultado.getInt("edad"));
+			System.out.println("---------------------------------------------");
+		}
+		resultado.close();
+	}
+	
+	public static void selectNomApOrdAp(Connection conn) throws SQLException {
+		String sql = "SELECT nombre, apellido FROM persona ORDER BY apellido";
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		ResultSet resultado = pstmt.executeQuery();
+		while(resultado.next()){
+			System.out.println("---------------------------------------------");
+			System.out.println("Nombre: " + resultado.getString("nombre"));
+			System.out.println("Apellidos: " + resultado.getString("apellido"));
+			System.out.println("---------------------------------------------");
+		}
+		resultado.close();
+	}
+	
+	public static void selectNomApEd30(Connection conn) throws SQLException {
+		String sql = "SELECT nombre, apellido, edad FROM persona WHERE edad >= 30";
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		ResultSet resultado = pstmt.executeQuery();
+		while(resultado.next()){
+			System.out.println("---------------------------------------------");
+			System.out.println("Nombre: " + resultado.getString("nombre"));
+			System.out.println("Apellidos: " + resultado.getString("apellido"));
+			System.out.println("Edad: " + resultado.getInt("edad"));
+			System.out.println("---------------------------------------------");
+		}
+		resultado.close();
+	}
+	
+	public static void selectNomJApOrdAp(Connection conn) throws SQLException {
+		String sql = "SELECT nombre, apellido FROM persona WHERE nombre LIKE 'J%' ORDER BY apellido";
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		ResultSet resultado = pstmt.executeQuery();
+		while(resultado.next()){
+			System.out.println("---------------------------------------------");
+			System.out.println("Nombre: " + resultado.getString("nombre"));
+			System.out.println("Apellidos: " + resultado.getString("apellido"));
+			System.out.println("---------------------------------------------");
+		}
+		resultado.close();
+	}
+	
+	public static void selectNomCApAEdOrdEd(Connection conn) throws SQLException {
+		String sql = "SELECT nombre, apellido, edad FROM persona WHERE nombre LIKE 'C%' AND apellido LIKE 'A%' ORDER BY edad desc";
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		ResultSet resultado = pstmt.executeQuery();
+		while(resultado.next()){
+			System.out.println("---------------------------------------------");
+			System.out.println("Nombre: " + resultado.getString("nombre"));
+			System.out.println("Apellidos: " + resultado.getString("apellido"));
+			System.out.println("Edad: " + resultado.getInt("edad"));
+			System.out.println("---------------------------------------------");
+		}
+		resultado.close();
+	}
+	
+	public static void mediaEdad(Connection conn) throws SQLException {
+		String sql = "SELECT avg(edad) FROM persona";
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		ResultSet resultado = pstmt.executeQuery();
+		while(resultado.next()) {
+			System.out.println("---------------------------------------------");
+			System.out.println("Edad: " + resultado.getInt("avg(edad)"));
+			System.out.println("---------------------------------------------");
+		}
+		resultado.close();
+	}
+	
+	public static void apellidosMPIN(Connection conn) throws SQLException {
+		String sql = "SELECT apellido FROM persona WHERE apellido LIKE '%in%' OR apellido LIKE '%mp%'";
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		ResultSet resultado = pstmt.executeQuery();
+		while(resultado.next()) {
+			System.out.println("---------------------------------------------");
+			System.out.println("Apellidos: " + resultado.getString("apellido"));
+			System.out.println("---------------------------------------------");
+		}
+		resultado.close();
+	}
+	
+	public static void selectAllEd2432(Connection conn) throws SQLException {
+		String sql = "SELECT * FROM persona WHERE edad >= 24 AND edad <= 32";
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		ResultSet resultado = pstmt.executeQuery();
+		while(resultado.next()){
+			System.out.println("---------------------------------------------");
+			System.out.println("ID: " + resultado.getInt("id"));
+			System.out.println("Nombre: " + resultado.getString("nombre"));
+			System.out.println("Apellidos: " + resultado.getString("apellido"));
+			System.out.println("Edad: " + resultado.getInt("edad"));
+			System.out.println("---------------------------------------------");
+		}
+		resultado.close();
+	}
+	
+	public static void selectAllEd65(Connection conn) throws SQLException {
+		String sql = "SELECT * FROM persona WHERE edad >= 65";
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		ResultSet resultado = pstmt.executeQuery();
+		while(resultado.next()){
+			System.out.println("---------------------------------------------");
+			System.out.println("ID: " + resultado.getInt("id"));
+			System.out.println("Nombre: " + resultado.getString("nombre"));
+			System.out.println("Apellidos: " + resultado.getString("apellido"));
+			System.out.println("Edad: " + resultado.getInt("edad"));
+			System.out.println("---------------------------------------------");
+		}
+		resultado.close();
+	}
+	
+	public static void crearLaboral(Connection conn, java.sql.Statement stmt) throws SQLException {
+		try {
+			
+            // Creamos un nuevo objeto con la conexión
+            stmt = conn.createStatement();
+            
+            String sql = "ALTER TABLE persona ADD COLUMN laboral ENUM('estudiante', 'ocupado', 'parado', 'jubilado') NOT NULL;";
+            stmt.executeUpdate(sql);
+            System.out.println("Columna 'laboral' añadida exitosamente.");
+            
+        } catch(SQLException se) {
+            //Gestionamos los posibles errores que puedan surgir durante la ejecucion de la insercion
+            se.printStackTrace();
+        } catch(Exception e) {
+            //Gestionamos los posibles errores
+            e.printStackTrace();
+        } finally {
+            stmt.close();
+        }
+	}
+	
+	public static void actualizarLaboral(Connection conn, java.sql.Statement stmt) throws SQLException {
+		try {
+			
+            // Creamos un nuevo objeto con la conexión
+            stmt = conn.createStatement();
+            
+            String sql = "UPDATE persona " +
+                    "SET laboral = CASE " +
+                    "WHEN edad < 18 THEN 'estudiante' " +
+                    "WHEN edad > 65 THEN 'jubilado' " +
+                    "WHEN MOD(edad, 2) = 1 THEN 'parado' " +
+                    "ELSE 'ocupado' " +
+                    "END";
+            stmt.executeUpdate(sql);
+            System.out.println("Actualización completada exitosamente.");
+            
+        } catch(SQLException se) {
+            //Gestionamos los posibles errores que puedan surgir durante la ejecucion de la insercion
+            se.printStackTrace();
+        } catch(Exception e) {
+            //Gestionamos los posibles errores
+            e.printStackTrace();
+        } finally {
+            stmt.close();
         }
 	}
 	
