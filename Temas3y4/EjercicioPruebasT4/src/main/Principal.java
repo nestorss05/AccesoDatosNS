@@ -28,7 +28,7 @@ public class Principal {
                 }
                 
                 case 2 -> {
-                	DatabaseDAL.selectAllOrdAp(conn);
+                	DatabaseDAL.selectAllOrdEd(conn);
                 }
                 
                 case 3 -> {
@@ -71,6 +71,10 @@ public class Principal {
                 	DatabaseDAL.actualizarLaboral(conn, stmt);
                 }
                 
+                case 13 -> {
+                	DatabaseDAL.consultaPropia(conn, stmt);
+                }
+                
                 case 0 -> {
                 	System.out.println("Saliendo...");
                 }
@@ -106,6 +110,7 @@ public class Principal {
         System.out.println("10. Listado de las personas mayores de 65 años.");
         System.out.println("11. Crea una columna denominada \"laboral\" que contendrá los siguientes valores: estudiante, ocupado, parado, jubilado");
         System.out.println("12. Actualizar la columna laboral");
+        System.out.println("13. Mi consulta propia");
         System.out.println("0. Salir");
         System.out.println("Inserta una opcion");
 	}

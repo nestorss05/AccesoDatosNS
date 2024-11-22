@@ -56,8 +56,8 @@ public class DatabaseDAL {
         }
 	}
 	
-	public static void selectAllOrdAp(Connection conn) throws SQLException {
-		String sql = "SELECT * FROM persona ORDER BY apellido";
+	public static void selectAllOrdEd(Connection conn) throws SQLException {
+		String sql = "SELECT * FROM persona ORDER BY edad";
 		PreparedStatement pstmt = conn.prepareStatement(sql);
 		ResultSet resultado = pstmt.executeQuery();
 		while(resultado.next()){
@@ -85,7 +85,7 @@ public class DatabaseDAL {
 	}
 	
 	public static void selectNomApEd30(Connection conn) throws SQLException {
-		String sql = "SELECT nombre, apellido, edad FROM persona WHERE edad >= 30";
+		String sql = "SELECT nombre, apellido, edad FROM persona WHERE edad >= 30 ORDER BY edad";
 		PreparedStatement pstmt = conn.prepareStatement(sql);
 		ResultSet resultado = pstmt.executeQuery();
 		while(resultado.next()){
@@ -138,6 +138,7 @@ public class DatabaseDAL {
 	}
 	
 	public static void apellidosMPIN(Connection conn) throws SQLException {
+		System.out.println("Debido a que 'oh' y 'ma' no suelen ser frecuentes en esta BD, he usado los terminos 'in' y 'mp' ");
 		String sql = "SELECT apellido FROM persona WHERE apellido LIKE '%in%' OR apellido LIKE '%mp%'";
 		PreparedStatement pstmt = conn.prepareStatement(sql);
 		ResultSet resultado = pstmt.executeQuery();
@@ -150,7 +151,7 @@ public class DatabaseDAL {
 	}
 	
 	public static void selectAllEd2432(Connection conn) throws SQLException {
-		String sql = "SELECT * FROM persona WHERE edad >= 24 AND edad <= 32";
+		String sql = "SELECT * FROM persona WHERE edad >= 24 AND edad <= 32 ORDER BY edad";
 		PreparedStatement pstmt = conn.prepareStatement(sql);
 		ResultSet resultado = pstmt.executeQuery();
 		while(resultado.next()){
@@ -165,6 +166,7 @@ public class DatabaseDAL {
 	}
 	
 	public static void selectAllEd65(Connection conn) throws SQLException {
+		System.out.println("NOTA: si se ejecuta la opcion nº13, no se mostraran datos aqui.");
 		String sql = "SELECT * FROM persona WHERE edad >= 65";
 		PreparedStatement pstmt = conn.prepareStatement(sql);
 		ResultSet resultado = pstmt.executeQuery();
@@ -215,6 +217,29 @@ public class DatabaseDAL {
                     "END";
             stmt.executeUpdate(sql);
             System.out.println("Actualización completada exitosamente.");
+            
+        } catch(SQLException se) {
+            //Gestionamos los posibles errores que puedan surgir durante la ejecucion de la insercion
+            se.printStackTrace();
+        } catch(Exception e) {
+            //Gestionamos los posibles errores
+            e.printStackTrace();
+        } finally {
+            stmt.close();
+        }
+	}
+	
+	public static void consultaPropia(Connection conn, java.sql.Statement stmt) throws SQLException {
+		System.out.println("Consulta en cuestion: borrado de personas en caso de que sean mayores de 60");
+		try {
+			
+            // Creamos un nuevo objeto con la conexión
+            stmt = conn.createStatement();
+            
+            String sql = "DELETE FROM persona " +
+                    "WHERE edad > 60;";
+            stmt.executeUpdate(sql);
+            System.out.println("Eliminacion completada exitosamente.");
             
         } catch(SQLException se) {
             //Gestionamos los posibles errores que puedan surgir durante la ejecucion de la insercion

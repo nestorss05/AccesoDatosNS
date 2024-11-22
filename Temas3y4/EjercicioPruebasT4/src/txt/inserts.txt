@@ -123,7 +123,7 @@ insert into persona (id, nombre, apellido, edad) values (122, 'Abbye', 'Standall
 insert into persona (id, nombre, apellido, edad) values (123, 'Loella', 'Heers', 23);
 insert into persona (id, nombre, apellido, edad) values (124, 'Frederique', 'Robinet', 24);
 insert into persona (id, nombre, apellido, edad) values (125, 'Ariela', 'Vannuccini', 25);
-insert into persona (id, nombre, apellido, edad) values (126, 'Sari', 'Gaylor', 26);
+insert into persona (id, nombre, apellido, edad) values (126, 'Carlos', 'Alcaraz', 21);
 insert into persona (id, nombre, apellido, edad) values (127, 'Gene', 'Gelly', 27);
 insert into persona (id, nombre, apellido, edad) values (128, 'Pat', 'Watsham', 28);
 insert into persona (id, nombre, apellido, edad) values (129, 'Freddie', 'Caulcutt', 29);
