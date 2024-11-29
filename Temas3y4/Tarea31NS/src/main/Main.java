@@ -10,7 +10,7 @@ public class Main {
 		
 		int opc = -1;
 		int opc2 = 0;
-		DatabaseDAL db = new DatabaseDAL();
+		boolean res = false;
 		Scanner sc = new Scanner(System.in);
 		do {
 			
@@ -27,17 +27,17 @@ public class Main {
 				if (DatabaseDAL.conectar()) {
 					System.out.println("Se ha conectado a la BD exitosamente");
 				} else {
-					System.err.println("ERROR: no se pudo conectar a la BD (0x04)");
+					System.err.println("ERROR: no se pudo conectar a la BD (0x03)");
 				}
 			}
 			
 			case 2 -> {
 				if (DatabaseDAL.isConectado()) {
-					System.out.println("¿Que tabla quieres insertar?");
+					System.out.println("¿Que tabla quieres crear?");
 					System.out.println("1. Player");
 					System.out.println("2. Compras");
 					System.out.println("3. Games");
-					System.out.println("4. Todas");
+					System.out.println("4. Todas (predeterminado)");
 					opc2 = sc.nextInt();
 					
 					switch (opc2) {
@@ -46,18 +46,24 @@ public class Main {
 						if (DatabaseDAL.isGames() && DatabaseDAL.isPlayer()) {
 							DatabaseDAL.crearTablas(2);
 						} else {
-							System.err.println("ERROR: se deben crear las dos tablas anteriores primero (0x03)");
+							System.err.println("ERROR: se deben crear las dos tablas anteriores primero (0x02)");
 						}
 					}
 					
-					case 1, 3, 4 -> {
-						boolean res = DatabaseDAL.crearTablas(opc2);
+					case 1, 3 -> {
+						res = DatabaseDAL.crearTablas(opc2);
 					}
 					
 					default -> {
-						System.err.println("ERROR: opcion de insertado invalida (0x02)");
+						res = DatabaseDAL.crearTablas(4);
 					}
 					
+					}
+					
+					if (res) {
+						System.out.println("Se han creado las tablas exitosamente");
+					} else {
+						System.err.println("ERROR: no se pudieron crear las tablas (0x04)");
 					}
 					
 				} else {
@@ -67,8 +73,30 @@ public class Main {
 			
 			case 3 -> {
 				if (DatabaseDAL.isConectado()) {
-					System.err.println("ERROR: no implementado");
-					// TODO: conexion al ejercicio
+					System.out.println("¿Que tabla quieres insertar datos?");
+					System.out.println("1. Player");
+					System.out.println("2. Compras");
+					System.out.println("3. Games");
+					System.out.println("4. Todas (predeterminado)");
+					opc2 = sc.nextInt();
+					
+					switch (opc2) {
+					
+					case 1, 2, 3 -> {
+						res = DatabaseDAL.insertar(opc);
+					}
+					
+					default -> {
+						res = DatabaseDAL.insertar(4);
+					}
+					
+					}
+					
+					if (res) {
+						System.out.println("Se han creado las tablas exitosamente");
+					} else {
+						System.err.println("ERROR: no se pudieron crear las tablas (0x04)");
+					}
 				} else {
 					System.err.println("ERROR: conectate a la BD primero (0x01)");
 				}
