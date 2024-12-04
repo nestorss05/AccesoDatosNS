@@ -1,4 +1,4 @@
-dinsert into games (idGames, nombre, tiempoJugado) values (1, 'Fulica cristata', '48:57:58');
+insert into games (idGames, nombre, tiempoJugado) values (1, 'Fulica cristata', '48:57:58');
 insert into games (idGames, nombre, tiempoJugado) values (2, 'Lepilemur rufescens', '106:53:25');
 insert into games (idGames, nombre, tiempoJugado) values (3, 'Ninox superciliaris', '35:59:56');
 insert into games (idGames, nombre, tiempoJugado) values (4, 'Halcyon smyrnesis', '11:54:20');

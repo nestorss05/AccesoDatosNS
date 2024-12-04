@@ -10,7 +10,10 @@ public class ClsGames {
 		
 	}
 	
-	public ClsGames(String nombre, String tiempoJugado) {
+	public ClsGames(int idGames, String nombre, String tiempoJugado) {
+		if (idGames > 0) {
+			this.idGames = idGames;
+		}
 		if (nombre != null && !nombre.equals("")) {
 			this.nombre = nombre;
 		}
@@ -63,7 +66,7 @@ public class ClsGames {
 			int horas = Integer.parseInt(info[0]);
 			int minutos = Integer.parseInt(info[1]);
 			int segundos = Integer.parseInt(info[2]);
-			if (horas >= 0 && horas <= 23 && minutos >= 0 && minutos <= 59 && segundos >= 0 && segundos <= 59) {
+			if (horas >= 0 && minutos >= 0 && minutos <= 59 && segundos >= 0 && segundos <= 59) {
 				res = true;
 			}
 		}

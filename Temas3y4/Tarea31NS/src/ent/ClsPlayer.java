@@ -11,7 +11,10 @@ public class ClsPlayer {
 		
 	}
 	
-	public ClsPlayer(String nick, String password, String email) {
+	public ClsPlayer(int idPlayer, String nick, String password, String email) {
+		if (idPlayer > 0) {
+			this.idPlayer = idPlayer;
+		}
 		if (nick != null && !nick.equals("")) {
 			this.nick = nick;
 		}

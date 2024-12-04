@@ -13,7 +13,10 @@ public class ClsCompras {
 		
 	}
 	
-	public ClsCompras(int idPlayer, int idGames, String cosa, float precio, String date) {
+	public ClsCompras(int idCompra, int idPlayer, int idGames, String cosa, float precio, String date) {
+		if (idCompra >= 1) {
+			this.idCompra = idCompra;
+		}
 		if (idPlayer >= 1) {
 			this.idPlayer = idPlayer;
 		}

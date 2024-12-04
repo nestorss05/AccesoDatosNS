@@ -7,8 +7,15 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.InputMismatchException;
+
+import ent.ClsCompras;
+import ent.ClsGames;
+import ent.ClsPlayer;
+import main.Main;
 
 public class DatabaseDAL {
 	
@@ -17,6 +24,7 @@ public class DatabaseDAL {
 	private static boolean games;
 	private static boolean player;
 	private static Connection conn;
+	private static boolean incompleto;
 	
 	public static boolean isConectado() {
 		return conectado;
@@ -109,9 +117,16 @@ public class DatabaseDAL {
 						+ ")";
 				stmt.executeUpdate(sql);
 				
-				// Informa al usuario sobre la actualizacion y actualiza la booleana a true
+				// Informa al usuario sobre la actualizacion
 				System.out.println("Tabla player creada");
+				
+				// Actualiza la booleana a true
 				player = true;
+				
+				// Establece los datos por defecto
+				insertarDefault(1);
+				
+				// Actualiza res a true
 				res = true;
 				
 			}
@@ -135,9 +150,16 @@ public class DatabaseDAL {
 						+ ")";
 				stmt.executeUpdate(sql);
 				
-				// Informa al usuario sobre la actualizacion y actualiza la booleana a true
+				// Informa al usuario sobre la actualizacion
 				System.out.println("Tablas compras creada");
+				
+				// Actualiza la booleana a true
 				compras = true;
+				
+				// Establece los datos por defecto
+				insertarDefault(2);
+				
+				// Actualiza res a true
 				res = true;
 				
 			}
@@ -156,9 +178,16 @@ public class DatabaseDAL {
 						+ ")";
 				stmt.executeUpdate(sql);
 				
-				// Informa al usuario sobre la actualizacion y actualiza la booleana a true
+				// Informa al usuario sobre la actualizacion
 				System.out.println("Tablas games creada");
+				
+				// Actualiza la booleana a true
 				games = true;
+				
+				// Establece los datos por defecto
+				insertarDefault(3);
+				
+				// Actualiza res a true
 				res = true;
 				
 			}
@@ -204,11 +233,18 @@ public class DatabaseDAL {
 						+ ")";
 				stmt.executeUpdate(sql);
 				
-				// Informa al usuario sobre la actualizacion y actualiza las booleanas a true
+				// Informa al usuario sobre la actualizacion
 				System.out.println("Las tablas han sido creadas");
+				
+				// Actualiza las booleanas a true
 				player = true;
 				games = true;
 				compras = true;
+				
+				// Establece los datos por defecto
+				insertarDefault(4);
+				
+				// Actualiza res a true
 				res = true;
 				
 			}
@@ -226,7 +262,7 @@ public class DatabaseDAL {
 		
 	}
 	
-	public static boolean insertar(int opc) {
+	public static boolean insertarDefault(int opc) {
 		
 		boolean res = false;
 		String filePath = "";
@@ -238,7 +274,7 @@ public class DatabaseDAL {
 			case 1 -> {
 				if (player) {
 					filePath = "src/txt/players.txt";
-					res = leerArchivo(stmt, filePath);
+					res = leerDefault(stmt, filePath);
 				} else {
 					System.err.println("ERROR: la tabla no esta creada (0x0c)");
 				}
@@ -247,7 +283,7 @@ public class DatabaseDAL {
 			case 2 -> {
 				if (compras) {
 					filePath = "src/txt/compras.txt";
-					res = leerArchivo(stmt, filePath);
+					res = leerDefault(stmt, filePath);
 				} else {
 					System.err.println("ERROR: la tabla no esta creada (0x0c)");
 				}
@@ -256,7 +292,7 @@ public class DatabaseDAL {
 			case 3 -> {
 				if (games) {
 					filePath = "src/txt/games.txt";
-					res = leerArchivo(stmt, filePath);
+					res = leerDefault(stmt, filePath);
 				} else {
 					System.err.println("ERROR: la tabla no esta creada (0x0c)");
 				}
@@ -265,11 +301,11 @@ public class DatabaseDAL {
 			case 4 -> {
 				if (player && compras && games) {
 					filePath = "src/txt/players.txt";
-					res = leerArchivo(stmt, filePath);
-					filePath = "src/txt/compras.txt";
-					res = leerArchivo(stmt, filePath);
+					res = leerDefault(stmt, filePath);
 					filePath = "src/txt/games.txt";
-					res = leerArchivo(stmt, filePath);
+					res = leerDefault(stmt, filePath);
+					filePath = "src/txt/compras.txt";
+					res = leerDefault(stmt, filePath);
 				} else {
 					System.err.println("ERROR: una o varias de las tablas no estan creadas (0x0d)");
 				}
@@ -278,16 +314,16 @@ public class DatabaseDAL {
 			}
 			
 		} catch (SQLException e) {
-			System.err.println("ERROR: error interno a la hora de insertar los datos (0x0b)");
+			System.err.println("ERROR: error interno a la hora de insertar los datos default (0x0b)");
 			e.printStackTrace();
 		}
 		
-		System.out.println("Los inserts han sido exitosos");
+		System.out.println("Los inserts default han sido exitosos");
 		return res;
 		
 	}
 	
-	private static boolean leerArchivo(java.sql.Statement stmt, String filePath) {
+	private static boolean leerDefault(java.sql.Statement stmt, String filePath) {
 		String sql = "";
 		boolean res = false;
 		try {
@@ -302,6 +338,7 @@ public class DatabaseDAL {
                 }
             }
             br.close();
+            System.out.println("Datos default escritos en la DB");
             res = true;
 		} catch (FileNotFoundException e) {
 			System.err.println("ERROR: no se ha encontrado el archivo (0x08): ");
@@ -310,10 +347,235 @@ public class DatabaseDAL {
 			System.err.println("ERROR: error de E/S (0x09)");
 			e.printStackTrace();
 		} catch (SQLException e) {
-			System.out.println("ERROR: error a la hora de insertar los datos (0x0a)");
+			System.err.println("ERROR: error a la hora de insertar los datos default (0x0a)");
 			e.printStackTrace();
 		}
 		return res;
+	}
+	
+	public static boolean insertar(int opc) {
+		
+		incompleto = false;
+		int existe = 2;
+		boolean res = false;
+		String sql = "";
+		ClsPlayer player = new ClsPlayer();
+		ClsGames game = new ClsGames();
+		ClsCompras compra = new ClsCompras();
+		
+		try {
+			java.sql.Statement stmt = conn.createStatement();
+			switch (opc) {
+			
+			case 1 -> {
+				player = pedirJugador();
+				existe = existeID(player.getIdPlayer(), 1);
+				sql = "INSERT INTO player VALUES (" + player.getIdPlayer() + ", '" + player.getNick() + "', '" + player.getPassword() + "', '" + player.getEmail() + "')";
+			}
+			
+			case 2 -> {
+				compra = pedirCompra();
+				existe = existeID(compra.getIdCompra(), compra.getIdPlayer(), compra.getIdGames());
+				sql = "INSERT INTO compras VALUES (" + compra.getIdCompra() + ", " + compra.getIdPlayer() + ", " + compra.getIdGames() + ", '" + compra.getCosa() + "', " + compra.getPrecio() + ", '" + compra.getDate() + "')";
+			}
+			
+			case 3 -> {
+				game = pedirJuego();
+				existe = existeID(game.getIdGames(), 3);
+				sql = "INSERT INTO games VALUES (" + game.getIdGames() + ", '" + game.getNombre() + "', '" + game.getTiempoJugado() + "')";
+			}
+			
+			}
+			
+			if (!incompleto) {
+				stmt.executeUpdate(sql);
+				System.out.println("Datos escritos en la DB");
+		        res = true;
+			} else if (existe <= 0) {
+				switch (existe) {
+				
+				case 0 -> {
+					System.err.println("ERROR: el ID insertado ya existe en la DB (0x14)");
+				}
+				
+				case -1 -> {
+					System.err.println("ERROR: el ID de jugador y/o el ID de juegos no existen en la DB. Crealos primero y vuelva a intentarlo. (0x15)");
+				}
+				
+				}
+				
+			}
+	        
+		} catch (SQLException e) {
+			System.err.println("ERROR: error a la hora de insertar el dato (0x11)");
+			e.printStackTrace();
+		}
+		
+		return res;
+		
+	}
+	
+	private static ClsPlayer pedirJugador() {
+		
+		int id = 0;
+		String nick = "";
+		String password = "";
+		String email = "";
+		
+		try {
+			System.out.println("Inserta el ID del jugador");
+			id = Main.sc.nextInt();
+			Main.sc.nextLine();
+			
+			System.out.println("Inserta el nickname del jugador");
+			nick = Main.sc.nextLine();
+			
+			System.out.println("Inserta la contraseña del jugador");
+			password = Main.sc.nextLine();
+			
+			System.out.println("Inserta el correo del jugador");
+			email = Main.sc.nextLine();
+		} catch (InputMismatchException e) {
+			System.err.println("ERROR: error de respuesta. (0x12)");
+			Main.sc.nextLine();
+			e.printStackTrace();
+			incompleto = true;
+		}
+		
+		ClsPlayer player = new ClsPlayer(id, nick, password, email);
+		return player;
+		
+	}
+	
+	private static ClsCompras pedirCompra() {
+		
+		int idCompra = 0;
+		int idPlayer = 0;
+		int idGames = 0;
+		String cosa = "";
+		float precio = 0f;
+		String fechaCompra = "";
+		
+		try {
+			System.out.println("Inserta el ID de la compra");
+			idCompra = Main.sc.nextInt();
+			
+			System.out.println("Inserta el ID del jugador");
+			idPlayer = Main.sc.nextInt();
+			
+			System.out.println("Inserta el ID del juego");
+			idGames = Main.sc.nextInt();
+			Main.sc.nextLine();
+			
+			System.out.println("Inserta la descripcion de la compra");
+			cosa = Main.sc.nextLine();
+			
+			System.out.println("Inserta el precio del juego");
+			precio = Main.sc.nextFloat();
+			Main.sc.nextLine();
+			
+			System.out.println("Inserta la fecha de compra del juego (AAAA-MM-DD)");
+			fechaCompra = Main.sc.nextLine();
+			
+		} catch (InputMismatchException e) {
+			System.err.println("ERROR: error de respuesta. (0x12)");
+			Main.sc.nextLine();
+			e.printStackTrace();
+			incompleto = true;
+		}
+		
+		ClsCompras compra = new ClsCompras(idCompra, idPlayer, idGames, cosa, precio, fechaCompra);	
+		return compra;
+		
+	}
+	
+	private static ClsGames pedirJuego() {
+		
+		int id = 0;
+		String nombre = "";
+		String time = "";
+		
+		try {
+			System.out.println("Inserta el ID del juego");
+			id = Main.sc.nextInt();
+			Main.sc.nextLine();
+			
+			System.out.println("Inserta el nombre del juego");
+			nombre = Main.sc.nextLine();
+			
+			System.out.println("Inserta el tiempo jugado del juego (HH:MM:SS)");
+			time = Main.sc.nextLine();
+		} catch (InputMismatchException e) {
+			System.err.println("ERROR: error de respuesta. (0x12)");
+			Main.sc.nextLine();
+			e.printStackTrace();
+			incompleto = true;
+		}
+		
+		ClsGames game = new ClsGames(id, nombre, time);
+		return game;
+		
+	}
+	
+	private static int existeID(int id, int opc) {
+		
+		// TODO: comprobar codigo
+		
+		int salida = 0;
+		int res = 0;
+		String sql = "";
+		
+		switch (opc) {
+		
+		case 1 -> {
+			
+			sql = "SELECT EXISTS (SELECT 1 FROM player WHERE idPlayer = " + id + ") AS existe";
+			PreparedStatement pstmt;
+			try {
+				pstmt = conn.prepareStatement(sql);
+				ResultSet resultado = pstmt.executeQuery();
+				salida = resultado.getInt("existe");
+			} catch (SQLException e) {
+				System.err.println("ERROR: error a la hora de comprobar la existencia del elemento a insertar (0x16)");
+				e.printStackTrace();
+			}
+			
+			
+		}
+		
+		case 3 -> {
+			
+			sql = "SELECT EXISTS (SELECT 1 FROM games WHERE idGames = " + id + ") AS existe";
+			PreparedStatement pstmt;
+			try {
+				pstmt = conn.prepareStatement(sql);
+				ResultSet resultado = pstmt.executeQuery();
+				salida = resultado.getInt("existe");
+			} catch (SQLException e) {
+				System.err.println("ERROR: error a la hora de comprobar la existencia del elemento a insertar (0x16)");
+				e.printStackTrace();
+			}
+			
+		}
+		
+		}
+		
+		if (salida == 1) {
+			res = 1;
+		}
+		
+		return res;
+		
+	}
+	
+	private static int existeID(int idCompra, int idPlayer, int idGames) {
+		
+		int res = 1;
+		String sql = "";
+		
+		// TODO comprobar existencia de la ID de compra
+		// TODO comprobar existencia de si no existen los IDs de player y games
+	
 	}
 	
 	public static void listar(int opc) {
