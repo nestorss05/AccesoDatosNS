@@ -128,8 +128,23 @@ public class Main {
 				
 				case 4 -> {
 					if (DatabaseDAL.isConectado()) {
-						System.err.println("ERROR: no implementado");
-						// TODO: conexion al ejercicio
+						System.out.println("¿Que tabla deseas listar?");
+						System.out.println("1. Player");
+						System.out.println("2. Compras");
+						System.out.println("3. Games");
+						opc2 = sc.nextInt();
+						
+						switch (opc2) {
+						
+						case 1, 2, 3 -> {
+							DatabaseDAL.listar(opc2);
+						}
+						
+						default -> {
+							System.err.println("ERROR: opcion de select invalida (0x1b)");
+						}
+						
+						}
 					} else {
 						System.err.println("ERROR: conectate a la BD primero (0x01)");
 					}
@@ -137,8 +152,49 @@ public class Main {
 				
 				case 5 -> {
 					if (DatabaseDAL.isConectado()) {
-						System.err.println("ERROR: no implementado");
-						// TODO: conexion al ejercicio
+						System.out.println("¿En que tabla quieres modificar datos?");
+						System.out.println("1. Player");
+						System.out.println("2. Compras");
+						System.out.println("3. Games");
+						opc2 = sc.nextInt();
+						
+						switch (opc2) {
+						
+						case 1 -> {
+							if (DatabaseDAL.isPlayer()) {
+								res = DatabaseDAL.modificar(opc2);
+							} else {
+								System.err.println("ERROR: la tabla no esta creada. Modify anulado. (0x17)");
+							}
+						}
+						
+						case 2 -> {
+							if (DatabaseDAL.isCompras() && DatabaseDAL.isGames() && DatabaseDAL.isPlayer()) {
+								res = DatabaseDAL.modificar(opc2);
+							} else {
+								System.err.println("ERROR: la tabla (o una de las otras dos) no estan creadas. Modify anulado (0x18)");
+							}
+						}
+						
+						case 3 -> {
+							if (DatabaseDAL.isGames()) {
+								res = DatabaseDAL.modificar(opc2);
+							} else {
+								System.err.println("ERROR: la tabla no esta creada. Modify anulado. (0x17)");
+							}
+						}
+						
+						default -> {
+							System.err.println("ERROR: opcion de modify invalida (0x20)");
+						}
+						
+						}
+						
+						if (res) {
+							System.out.println("Se han creado las tablas exitosamente");
+						} else {
+							System.err.println("ERROR: no se pudo insertar el objeto (0x04)");
+						}
 					} else {
 						System.err.println("ERROR: conectate a la BD primero (0x01)");
 					}
@@ -146,8 +202,39 @@ public class Main {
 				
 				case 6 -> {
 					if (DatabaseDAL.isConectado()) {
-						System.err.println("ERROR: no implementado");
-						// TODO: conexion al ejercicio
+						System.out.println("¿Que tabla quieres eliminar?");
+						System.out.println("1. Player");
+						System.out.println("2. Compras");
+						System.out.println("3. Games");
+						System.out.println("4. Todas (predeterminado)");
+						opc2 = sc.nextInt();
+						
+						switch (opc2) {
+						
+						case 2, 4 -> {
+							res = DatabaseDAL.borrar(opc2);
+						}
+						
+						case 1, 3 -> {
+							if (!DatabaseDAL.isCompras()) {
+								res = DatabaseDAL.borrar(opc2);
+							} else {
+								System.err.println("ERROR: dependencia de la tabla escogida en la FK de la tabla COMPRAS (0x20)");
+							}
+						}
+						
+						default -> {
+							res = DatabaseDAL.borrar(4);
+						}
+						
+						}
+						
+						if (res) {
+							System.out.println("Se han eliminado las tablas exitosamente");
+						} else {
+							System.err.println("ERROR: no se pudieron eliminar las tablas (0x1f)");
+						}
+						
 					} else {
 						System.err.println("ERROR: conectate a la BD primero (0x01)");
 					}
@@ -166,7 +253,6 @@ public class Main {
 			} catch (InputMismatchException e) {
 				System.err.println("ERROR: respuesta invalida. (0x13)");
 				sc.nextLine();
-				e.printStackTrace();
 			}
 			
 		} while (opc != 0);

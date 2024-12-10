@@ -387,11 +387,11 @@ public class DatabaseDAL {
 			
 			}
 			
-			if (!incompleto) {
+			if (!incompleto && existe == 1) {
 				stmt.executeUpdate(sql);
 				System.out.println("Datos escritos en la DB");
 		        res = true;
-			} else if (existe <= 0) {
+			} else {
 				switch (existe) {
 				
 				case 0 -> {
@@ -408,7 +408,6 @@ public class DatabaseDAL {
 	        
 		} catch (SQLException e) {
 			System.err.println("ERROR: error a la hora de insertar el dato (0x11)");
-			e.printStackTrace();
 		}
 		
 		return res;
@@ -519,8 +518,6 @@ public class DatabaseDAL {
 	
 	private static int existeID(int id, int opc) {
 		
-		// TODO: comprobar codigo
-		
 		int salida = 0;
 		int res = 0;
 		String sql = "";
@@ -536,10 +533,8 @@ public class DatabaseDAL {
 				ResultSet resultado = pstmt.executeQuery();
 				salida = resultado.getInt("existe");
 			} catch (SQLException e) {
-				System.err.println("ERROR: error a la hora de comprobar la existencia del elemento a insertar (0x16)");
-				e.printStackTrace();
+				System.out.println("El jugador existe");
 			}
-			
 			
 		}
 		
@@ -552,15 +547,14 @@ public class DatabaseDAL {
 				ResultSet resultado = pstmt.executeQuery();
 				salida = resultado.getInt("existe");
 			} catch (SQLException e) {
-				System.err.println("ERROR: error a la hora de comprobar la existencia del elemento a insertar (0x16)");
-				e.printStackTrace();
+				System.out.println("El juego existe");
 			}
 			
 		}
 		
 		}
 		
-		if (salida == 1) {
+		if (salida == 0) {
 			res = 1;
 		}
 		
@@ -570,32 +564,404 @@ public class DatabaseDAL {
 	
 	private static int existeID(int idCompra, int idPlayer, int idGames) {
 		
+		// TODO: comprobar codigo (no me deja el perro del Linux)
+		
+		int salida = 0;
 		int res = 1;
 		String sql = "";
 		
-		// TODO comprobar existencia de la ID de compra
-		// TODO comprobar existencia de si no existen los IDs de player y games
+		sql = "SELECT EXISTS (SELECT 1 FROM compras WHERE idCompra = " + idCompra + ") AS existe";
+		PreparedStatement pstmt;
+		try {
+			pstmt = conn.prepareStatement(sql);
+			ResultSet resultado = pstmt.executeQuery();
+			salida = resultado.getInt("existe");
+		} catch (SQLException e) {
+			// TODO: a veces se muestra este mensaje de error aunque el objeto no exista
+			System.err.println("La compra existe");
+		}
+		
+		if (salida == 0) {
+			sql = "SELECT EXISTS (SELECT 1 FROM player WHERE idPlayer = " + idPlayer + ") AS existe";
+			try {
+				pstmt = conn.prepareStatement(sql);
+				ResultSet resultado = pstmt.executeQuery();
+				salida = resultado.getInt("existe");
+			} catch (SQLException e) {
+				// TODO: a veces se muestra este mensaje de error aunque el objeto no exista
+				System.err.println("ERROR: el jugador no existe (0x19)");
+			}
+			if (salida == 1) {
+				sql = "SELECT EXISTS (SELECT 1 FROM games WHERE idGames = " + idGames + ") AS existe";
+				try {
+					pstmt = conn.prepareStatement(sql);
+					ResultSet resultado = pstmt.executeQuery();
+					salida = resultado.getInt("existe");
+				} catch (SQLException e) {
+					// TODO: a veces se muestra este mensaje de error aunque el objeto no exista
+					System.err.println("ERROR: el juego no existe (0x1a)");
+				}
+				if (salida == 1) {
+					res = 1;
+				} else {
+					res = -1;
+				}
+			} else {
+				res = -1;
+			}
+		} else {
+			res = 0;
+		}
+				
+		return res;
 	
 	}
 	
 	public static void listar(int opc) {
 		
-		// TODO listar los datos de una o de todas las tablas
+		int opc2 = 1;
+		System.out.println("¿Deseas listar la tabla entera o listarla por parametros");
+		System.out.println("1. Listar la tabla entera (predeterminado)");
+		System.out.println("2. Listar la tabla por parametros");
+		
+		try {
+			opc2 = Main.sc.nextInt();
+			
+		} catch (InputMismatchException e) {
+			System.err.println("ERROR: respuesta invalida. (0x1c)");
+			Main.sc.nextLine();
+			opc2 = 1;
+		} finally {
+			listar2(opc, opc2);
+		}
+		
+	}
+	
+	public static void listar2(int opc, int opc2) {
+		switch (opc2) {
+		
+		case 1 -> {
+			listadoCompleto(opc);
+		}
+		
+		case 2 -> {
+			listadoParcial(opc);
+		}
+		
+		default -> {
+			System.err.println("ERROR: respuesta invalida");
+		}
+		
+		}
+	}
+	
+	public static void listadoCompleto(int opc) {
+		
+		// TODO probar codigo
+		String sql = "";
+		
+		switch (opc) {
+		
+		case 1 -> {
+			sql = "SELECT * from player";
+			PreparedStatement pstmt;
+			try {
+				pstmt = conn.prepareStatement(sql);
+				ResultSet resultado = pstmt.executeQuery();
+				while(resultado.next()){
+					System.out.println("ID: " + resultado.getInt("idPlayer"));
+					System.out.println("Nombre" + resultado.getString("nick"));
+					System.out.println("Contraseña" + resultado.getString("password"));
+					System.out.println("Email" + resultado.getString("email"));
+				}
+			} catch (SQLException e) {
+				System.err.println("ERROR: error a la hora de mostrar datos (0x16)");
+			}
+		}
+		
+		case 2 -> {
+			sql = "SELECT * from compras";
+			PreparedStatement pstmt;
+			try {
+				pstmt = conn.prepareStatement(sql);
+				ResultSet resultado = pstmt.executeQuery();
+				while(resultado.next()){
+					System.out.println("ID de compra: " + resultado.getInt("idCompra"));
+					System.out.println("ID de jugador: " + resultado.getInt("idPlayer"));
+					System.out.println("ID de juego: " + resultado.getInt("idGames"));
+					System.out.println("Datos: " + resultado.getString("cosa"));
+					System.out.println("Precio: " + resultado.getDouble("precio"));
+					System.out.println("Fecha de compra: " + resultado.getString("FechaCompra"));
+				}
+			} catch (SQLException e) {
+				System.err.println("ERROR: error a la hora de mostrar datos (0x16)");
+			}
+		}
+		
+		case 3 -> {
+			sql = "SELECT * from games";
+			PreparedStatement pstmt;
+			try {
+				pstmt = conn.prepareStatement(sql);
+				ResultSet resultado = pstmt.executeQuery();
+				while(resultado.next()){
+					System.out.println("ID: " + resultado.getInt("idGames"));
+					System.out.println("Nombre" + resultado.getString("nombre"));
+					System.out.println("Tiempo jugado" + resultado.getString("tiempoJugado"));
+				}
+			} catch (SQLException e) {
+				System.err.println("ERROR: error a la hora de mostrar datos (0x16)");
+			}
+		}
+		
+		}
+	}
+	
+	public static void listadoParcial(int opc) {
+		
+		// TODO: terminar listado parcial (como meto los parametros de por medio?)
+		String sql = "";
+		
+		switch (opc) {
+		
+		case 1 -> {
+			System.err.println("ERROR: no implementado");
+		}
+		
+		case 2 -> {
+			System.err.println("ERROR: no implementado");
+		}
+		
+		case 3 -> {
+			System.err.println("ERROR: no implementado");
+		}
+		
+		}
 		
 	}
 	
 	public static boolean modificar(int opc) {
 		
-		// TODO modificar los datos de una o de todas las tablas
+		// TODO probar el modify
 		boolean res = false;
+		incompleto = false;
+		boolean commit = false;
+		int noExiste = 2;
+		String sql = "";
+		String respuestaCommit = "";
+		ClsPlayer player = new ClsPlayer();
+		ClsGames game = new ClsGames();
+		ClsCompras compra = new ClsCompras();
+		
+		try {
+			java.sql.Statement stmt = conn.createStatement();
+			switch (opc) {
+			
+			case 1 -> {
+				player = pedirJugador();
+				noExiste = existeID(player.getIdPlayer(), 1);
+				sql = "UPDATE player SET (" + player.getIdPlayer() + ", '" + player.getNick() + "', '" + player.getPassword() + "', '" + player.getEmail() + "') WHERE idPlayer = " + player.getIdPlayer();
+			}
+			
+			case 2 -> {
+				compra = pedirCompra();
+				noExiste = existeID(compra.getIdCompra(), compra.getIdPlayer(), compra.getIdGames());
+				sql = "UPDATE compras SET (" + compra.getIdCompra() + ", " + compra.getIdPlayer() + ", " + compra.getIdGames() + ", '" + compra.getCosa() + "', " + compra.getPrecio() + ", '" + compra.getDate() + "') WHERE idGames = " + compra.getIdCompra();
+			}
+			
+			case 3 -> {
+				game = pedirJuego();
+				noExiste = existeID(game.getIdGames(), 3);
+				sql = "UPDATE games SET (" + game.getIdGames() + ", '" + game.getNombre() + "', '" + game.getTiempoJugado() + "') WHERE idGames = " + game.getIdGames();
+			}
+			
+			}
+			
+			System.out.println("¿Estas seguro de realizar la operacion? (S/N)");
+			respuestaCommit = Main.sc.nextLine().toUpperCase();
+			
+			if (respuestaCommit == "S") {
+				commit = true;
+			}
+			
+			if (!incompleto && noExiste == 0 && commit) {
+				stmt.executeUpdate(sql);
+				System.out.println("Los datos se han actualizado correctamente");
+		        res = true;
+			} else {
+				switch (noExiste) {
+				
+				case 1 -> {
+					System.err.println("ERROR: el ID insertado no existe en la DB (0x1d)");
+				}
+				
+				case -1 -> {
+					System.err.println("ERROR: el ID de jugador y/o el ID de juegos no existen en la DB. Crealos primero y vuelva a intentarlo. (0x15)");
+				}
+				
+				case 2 -> {
+					System.out.println("El usuario ha decidido cancelar la operacion.");
+				}
+				
+				}
+				
+			}
+	        
+		} catch (SQLException e) {
+			System.err.println("ERROR: error a la hora de actualizar el dato (0x1e)");
+		}
+		
+		return res;
 		
 	}
 	
 	public static boolean borrar(int opc) {
 		
-		// TODO borrar los datos de una o de todas las tablas
+		// TODO: probar los borrados basicos
 		boolean res = false;
+		boolean commit = false;
+		String respuestaCommit = "";
+		String sql = "";
+		int opc2 = 0;
+		try {
+			
+			java.sql.Statement stmt = conn.createStatement();
+			switch (opc) {
+			
+			case 1 -> {
+				opc2 = pedirOpcionBorrado();
+				switch (opc2) {
+				
+				case 1 -> {
+					System.out.println("¿Estas seguro de realizar la operacion? (S/N)");
+					respuestaCommit = Main.sc.nextLine().toUpperCase();
+					
+					if (respuestaCommit == "S") {
+						commit = true;
+					}
+					
+					if (commit) {
+						sql = "DELETE FROM compras";
+			            stmt.executeUpdate(sql);
+			            res = true;
+					} else {
+						System.out.println("Operacion cancelada por el usuario.");
+					}
+					
+				}
+				
+				case 2 -> {
+					// TODO: borrado con parametros
+					System.err.println("ERROR: no implementado");
+				}
+				
+				}
+			}
+			
+			case 2 -> {
+				opc2 = pedirOpcionBorrado();
+				switch (opc2) {
+				
+				case 1 -> {
+					System.out.println("¿Estas seguro de realizar la operacion? (S/N)");
+					respuestaCommit = Main.sc.nextLine().toUpperCase();
+					
+					if (respuestaCommit == "S") {
+						commit = true;
+					}
+					
+					if (commit) {
+			            sql = "DELETE FROM player";
+			            stmt.executeUpdate(sql);
+			            res = true;
+					} else {
+						System.out.println("Operacion cancelada por el usuario.");
+					}
+				}
+				
+				case 2 -> {
+					// TODO: borrado con parametros
+					System.err.println("ERROR: no implementado");
+				}
+				
+				}
+			}
+			
+			case 3 -> {
+				opc2 = pedirOpcionBorrado();
+				switch (opc2) {
+				
+				case 1 -> {
+					System.out.println("¿Estas seguro de realizar la operacion? (S/N)");
+					respuestaCommit = Main.sc.nextLine().toUpperCase();
+					
+					if (respuestaCommit == "S") {
+						commit = true;
+					}
+					
+					if (commit) {
+			            sql = "DELETE FROM games";
+			            stmt.executeUpdate(sql);
+			            res = true;
+					} else {
+						System.out.println("Operacion cancelada por el usuario.");
+					}
+					
+				}
+				
+				case 2 -> {
+					// TODO: borrado con parametros
+					System.err.println("ERROR: no implementado");
+				}
+				
+				}
+			}
+			
+			case 4 -> {
+				System.out.println("¿Estas seguro de realizar la operacion? (S/N)");
+				respuestaCommit = Main.sc.nextLine().toUpperCase();
+				
+				if (respuestaCommit == "S") {
+					commit = true;
+				}
+				
+				if (commit) {
+					sql = "DELETE FROM compras";
+		            stmt.executeUpdate(sql);
+		            sql = "DELETE FROM player";
+		            stmt.executeUpdate(sql);
+		            sql = "DELETE FROM games";
+		            stmt.executeUpdate(sql);
+		            res = true;
+				} else {
+					System.out.println("Operacion cancelada por el usuario.");
+				}
+			}
+			
+			}
+		} catch (SQLException e) {
+			System.err.println("ERROR: error a la hora de eliminar la tabla (0x21)");
+		}
 		
+		return res;
+		
+	}
+	
+	public static int pedirOpcionBorrado() {
+		int opc = 0;
+		try {
+			System.out.println("¿Deseas borrar toda la tabla o una serie de datos concretos?");
+			System.out.println("1. Toda la tabla (predeterminado");
+			System.out.println("2. Datos concretos");
+			opc = Main.sc.nextInt();
+			if (opc != 1 && opc != 2) {
+				opc = 1;
+			}
+		} catch (InputMismatchException e) {
+			System.err.println("ERROR: opcion invalida. Se escogera la opcion 1");
+			opc = 1;
+		}
+		return opc;
 	}
 	
 }
