@@ -191,9 +191,9 @@ public class Main {
 						}
 						
 						if (res) {
-							System.out.println("Se han creado las tablas exitosamente");
+							System.out.println("Se ha actualizado el objeto exitosamente");
 						} else {
-							System.err.println("ERROR: no se pudo insertar el objeto (0x04)");
+							System.err.println("ERROR: no se pudo actualizar el objeto (0x24)");
 						}
 					} else {
 						System.err.println("ERROR: conectate a la BD primero (0x01)");
@@ -211,16 +211,8 @@ public class Main {
 						
 						switch (opc2) {
 						
-						case 2, 4 -> {
+						case 1, 2, 3, 4 -> {
 							res = DatabaseDAL.borrar(opc2);
-						}
-						
-						case 1, 3 -> {
-							if (!DatabaseDAL.isCompras()) {
-								res = DatabaseDAL.borrar(opc2);
-							} else {
-								System.err.println("ERROR: dependencia de la tabla escogida en la FK de la tabla COMPRAS (0x20)");
-							}
 						}
 						
 						default -> {
