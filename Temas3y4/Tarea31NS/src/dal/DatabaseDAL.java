@@ -514,14 +514,24 @@ public class DatabaseDAL {
 			// Pide al usuario el nick del jugador
 			System.out.println("Inserta el nickname del jugador");
 			nick = Main.sc.nextLine();
+			if (!idRequired && nick.equals("")) {
+				nick = "_";
+			}
 			
 			// Pide al usuario la contraseña del jugador
 			System.out.println("Inserta la contraseña del jugador");
 			password = Main.sc.nextLine();
+			if (!idRequired && password.equals("")) {
+				password = "_";
+			}
 			
 			// Pide al usuario el correo del jugador
 			System.out.println("Inserta el correo del jugador");
 			email = Main.sc.nextLine();
+			if (!idRequired && email.equals("")) {
+				email = "_";
+			}
+			
 		} catch (InputMismatchException e) {
 			System.err.println("ERROR: error de respuesta. (0x12)");
 			Main.sc.nextLine();
@@ -574,6 +584,9 @@ public class DatabaseDAL {
 			// Pide al usuario la descripcion de la compra
 			System.out.println("Inserta la descripcion de la compra");
 			cosa = Main.sc.nextLine();
+			if (!idRequired && cosa.equals("")) {
+				cosa = "_";
+			}
 			
 			// Pide al usuario el precio del juegog
 			System.out.println("Inserta el precio del juego");
@@ -583,6 +596,9 @@ public class DatabaseDAL {
 			// Pide al usuario la fecha de compra del juego
 			System.out.println("Inserta la fecha de compra del juego (AAAA-MM-DD)");
 			fechaCompra = Main.sc.nextLine();
+			if (!idRequired && fechaCompra.equals("")) {
+				fechaCompra = "1970-01-01";
+			}
 			
 		} catch (InputMismatchException e) {
 			System.err.println("ERROR: error de respuesta. (0x12)");
@@ -625,10 +641,17 @@ public class DatabaseDAL {
 			// Pide al usuario el nombre del juego
 			System.out.println("Inserta el nombre del juego");
 			nombre = Main.sc.nextLine();
+			if (!idRequired && nombre.equals("")) {
+				nombre = "_";
+			}
 			
 			// Pide al usuario el tiempo jugado del juego
 			System.out.println("Inserta el tiempo jugado del juego (HH:MM:SS)");
 			time = Main.sc.nextLine();
+			if (!idRequired && time.equals("")) {
+				time = "00:00:00";
+			}
+			
 		} catch (InputMismatchException e) {
 			System.err.println("ERROR: error de respuesta. (0x12)");
 			Main.sc.nextLine();
@@ -744,41 +767,18 @@ public class DatabaseDAL {
 		// Resultado de la operacion a devolver
 		int res = 0;
 		
-		// Comando a ejecutar
-		String sql = "";
-				
-		// PreparedStatement
-		PreparedStatement pstmt;
-		
 		// Comprueba que no existe la ID de compra
 		salida = noExisteID(idCompra, 2);
 		
 		if (salida == 0) {
 			
 			// Comprueba la existencia de la ID del jugador en caso de que la ID de compra no exista
-			sql = "SELECT EXISTS (SELECT 1 FROM player WHERE idPlayer = " + idPlayer + ") AS existe";
-			try {
-				pstmt = conn.prepareStatement(sql);
-				ResultSet resultado = pstmt.executeQuery();
-				if (resultado.next()) {
-					salida = resultado.getInt("existe");
-				}
-			} catch (SQLException e) {
-				System.err.println("ERROR: error a la hora de comprobar la existencia de un jugador (0x22)");
-			} 
+			salida = noExisteID(idPlayer, 1);
+			
 			if (salida == 1) {
 				
 				// Comprueba la existencia de la ID del juego en caso de que la ID de juego exista
-				sql = "SELECT EXISTS (SELECT 1 FROM games WHERE idGames = " + idGames + ") AS existe";
-				try {
-					pstmt = conn.prepareStatement(sql);
-					ResultSet resultado = pstmt.executeQuery();
-					if (resultado.next()) {
-						salida = resultado.getInt("existe");
-					}
-				} catch (SQLException e) {
-					System.err.println("ERROR: error a la hora de comprobar la existencia de un juego (0x23)");
-				}
+				salida = noExisteID(idGames, 3);
 				
 				// Si los IDs de juego y compra existen, res sera 1 (idCompra no existe). De lo contrario, sera -1
 				if (salida == 1) {
@@ -786,6 +786,7 @@ public class DatabaseDAL {
 				} else {
 					res = -1;
 				}
+				
 			} else {
 				res = -1;
 			}
@@ -849,70 +850,27 @@ public class DatabaseDAL {
 		// Comando SQL a ejecutar
 		String sql = "";
 		
-		// PreparedStatement
-		PreparedStatement pstmt;
-		
 		switch (opc) {
 		
 		case 1 -> {
 			
 			// Lista todo el contenido de la tabla player
 			sql = "SELECT * from player";
-			try {
-				pstmt = conn.prepareStatement(sql);
-				ResultSet resultado = pstmt.executeQuery();
-				while(resultado.next()){
-					System.out.println("----------------------------------------------");
-					System.out.println("ID: " + resultado.getInt("idPlayer"));
-					System.out.println("Nombre: " + resultado.getString("nick"));
-					System.out.println("Contraseña: " + resultado.getString("password"));
-					System.out.println("Email: " + resultado.getString("email"));
-					System.out.println("----------------------------------------------");
-				}
-			} catch (SQLException e) {
-				System.err.println("ERROR: error a la hora de mostrar datos (0x16)");
-			}
+			listarJugadores(sql);
 		}
 		
 		case 2 -> {
 			
 			// Lista todo el contenido de la tabla compras
 			sql = "SELECT * from compras";
-			try {
-				pstmt = conn.prepareStatement(sql);
-				ResultSet resultado = pstmt.executeQuery();
-				while(resultado.next()){
-					System.out.println("----------------------------------------------");
-					System.out.println("ID de compra: " + resultado.getInt("idCompra"));
-					System.out.println("ID de jugador: " + resultado.getInt("idPlayer"));
-					System.out.println("ID de juego: " + resultado.getInt("idGames"));
-					System.out.println("Datos: " + resultado.getString("cosa"));
-					System.out.println("Precio: " + resultado.getDouble("precio"));
-					System.out.println("Fecha de compra: " + resultado.getString("FechaCompra"));
-					System.out.println("----------------------------------------------");
-				}
-			} catch (SQLException e) {
-				System.err.println("ERROR: error a la hora de mostrar datos (0x16)");
-			}
+			listarCompras(sql);
 		}
 		
 		case 3 -> {
 			
 			// Lista todo el contenido de la tabla games
 			sql = "SELECT * from games";
-			try {
-				pstmt = conn.prepareStatement(sql);
-				ResultSet resultado = pstmt.executeQuery();
-				while(resultado.next()){
-					System.out.println("----------------------------------------------");
-					System.out.println("ID: " + resultado.getInt("idGames"));
-					System.out.println("Nombre: " + resultado.getString("nombre"));
-					System.out.println("Tiempo jugado: " + resultado.getString("tiempoJugado"));
-					System.out.println("----------------------------------------------");
-				}
-			} catch (SQLException e) {
-				System.err.println("ERROR: error a la hora de mostrar datos (0x16)");
-			}
+			listarJuegos(sql);
 		}
 		
 		}
@@ -932,9 +890,6 @@ public class DatabaseDAL {
 		ClsGames game = new ClsGames();
 		ClsCompras compra = new ClsCompras();
 		
-		// PreparedStatement
-		PreparedStatement pstmt;
-		
 		try {
 			
 			switch (opc) {
@@ -943,20 +898,7 @@ public class DatabaseDAL {
 				// Lista los jugadores dependiendo de los parametros obtenidos
 				player = pedirJugador(false);
 				sql = "SELECT * FROM player WHERE nick LIKE '%" + player.getNick() + "%' AND password LIKE '%" + player.getPassword() + "%' AND email LIKE '%" + player.getEmail() + "%'";
-				try {
-					pstmt = conn.prepareStatement(sql);
-					ResultSet resultado = pstmt.executeQuery();
-					while(resultado.next()){
-						System.out.println("----------------------------------------------");
-						System.out.println("ID: " + resultado.getInt("idPlayer"));
-						System.out.println("Nombre: " + resultado.getString("nick"));
-						System.out.println("Contraseña: " + resultado.getString("password"));
-						System.out.println("Email: " + resultado.getString("email"));
-						System.out.println("----------------------------------------------");
-					}
-				} catch (SQLException e) {
-					System.err.println("ERROR: error a la hora de mostrar datos (0x16)");
-				}
+				listarJugadores(sql);
 			}
 			
 			case 2 -> {
@@ -965,41 +907,15 @@ public class DatabaseDAL {
 				sql = "SELECT * FROM compras WHERE cosa LIKE '%" + compra.getCosa() + "%'";
 				// TODO: IDs de jugador, juego y precio: ¿Igual, mayor, mayorIgual, menor o menorIgual?
 				// TODO: Fecha de compra: filtrado a base de año, mes y dia?
-				try {
-					pstmt = conn.prepareStatement(sql);
-					ResultSet resultado = pstmt.executeQuery();
-					while(resultado.next()){
-						System.out.println("----------------------------------------------");
-						System.out.println("ID de compra: " + resultado.getInt("idCompra"));
-						System.out.println("ID de jugador: " + resultado.getInt("idPlayer"));
-						System.out.println("ID de juego: " + resultado.getInt("idGames"));
-						System.out.println("Datos: " + resultado.getString("cosa"));
-						System.out.println("Precio: " + resultado.getDouble("precio"));
-						System.out.println("Fecha de compra: " + resultado.getString("FechaCompra"));
-						System.out.println("----------------------------------------------");
-					}
-				} catch (SQLException e) {
-					System.err.println("ERROR: error a la hora de mostrar datos (0x16)");
-				}
+				listarCompras(sql);
 			}
 			
 			case 3 -> {
 				// Lista los juegos dependiendo de los parametros obtenidos
 				game = pedirJuego(false);
 				sql = "SELECT * FROM games WHERE nombre LIKE '%" + game.getNombre() + "%' AND tiempoJugado LIKE '%" + game.getTiempoJugado() + "%'";
-				try {
-					pstmt = conn.prepareStatement(sql);
-					ResultSet resultado = pstmt.executeQuery();
-					while(resultado.next()){
-						System.out.println("----------------------------------------------");
-						System.out.println("ID: " + resultado.getInt("idGames"));
-						System.out.println("Nombre: " + resultado.getString("nombre"));
-						System.out.println("Tiempo jugado: " + resultado.getString("tiempoJugado"));
-						System.out.println("----------------------------------------------");
-					}
-				} catch (SQLException e) {
-					System.err.println("ERROR: error a la hora de mostrar datos (0x16)");
-				}
+				// TODO: tiempoJugado: filtrado a base de horas, minutos y segundos?
+				listarJuegos(sql);
 			}
 			
 			}
@@ -1008,6 +924,61 @@ public class DatabaseDAL {
 			System.err.println("ERROR: dato invalido (0x29)");
 		}
 		
+	}
+	
+	private static void listarJugadores(String sql) {
+		PreparedStatement pstmt;
+		try {
+			pstmt = conn.prepareStatement(sql);
+			ResultSet resultado = pstmt.executeQuery();
+			while(resultado.next()){
+				System.out.println("----------------------------------------------");
+				System.out.println("ID: " + resultado.getInt("idPlayer"));
+				System.out.println("Nombre: " + resultado.getString("nick"));
+				System.out.println("Contraseña: " + resultado.getString("password"));
+				System.out.println("Email: " + resultado.getString("email"));
+				System.out.println("----------------------------------------------");
+			}
+		} catch (SQLException e) {
+			System.err.println("ERROR: error a la hora de mostrar datos (0x16)");
+		}
+	}
+	
+	private static void listarCompras(String sql) {
+		PreparedStatement pstmt;
+		try {
+			pstmt = conn.prepareStatement(sql);
+			ResultSet resultado = pstmt.executeQuery();
+			while(resultado.next()){
+				System.out.println("----------------------------------------------");
+				System.out.println("ID de compra: " + resultado.getInt("idCompra"));
+				System.out.println("ID de jugador: " + resultado.getInt("idPlayer"));
+				System.out.println("ID de juego: " + resultado.getInt("idGames"));
+				System.out.println("Datos: " + resultado.getString("cosa"));
+				System.out.println("Precio: " + resultado.getDouble("precio"));
+				System.out.println("Fecha de compra: " + resultado.getString("FechaCompra"));
+				System.out.println("----------------------------------------------");
+			}
+		} catch (SQLException e) {
+			System.err.println("ERROR: error a la hora de mostrar datos (0x16)");
+		}
+	}
+	
+	private static void listarJuegos(String sql) {
+		PreparedStatement pstmt;
+		try {
+			pstmt = conn.prepareStatement(sql);
+			ResultSet resultado = pstmt.executeQuery();
+			while(resultado.next()){
+				System.out.println("----------------------------------------------");
+				System.out.println("ID: " + resultado.getInt("idGames"));
+				System.out.println("Nombre: " + resultado.getString("nombre"));
+				System.out.println("Tiempo jugado: " + resultado.getString("tiempoJugado"));
+				System.out.println("----------------------------------------------");
+			}
+		} catch (SQLException e) {
+			System.err.println("ERROR: error a la hora de mostrar datos (0x16)");
+		}
 	}
 	
 	/**
