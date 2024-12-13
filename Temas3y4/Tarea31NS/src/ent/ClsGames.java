@@ -11,7 +11,7 @@ public class ClsGames {
 	}
 	
 	public ClsGames(int idGames, String nombre, String tiempoJugado) {
-		if (idGames > 0) {
+		if (idGames >= 0) {
 			this.idGames = idGames;
 		}
 		if (nombre != null && !nombre.equals("")) {
@@ -30,7 +30,7 @@ public class ClsGames {
 	}
 
 	public void setIdGames(int idGames) {
-		if (idGames >= 1) {
+		if (idGames >= 0) {
 			this.idGames = idGames;
 		}
 	}

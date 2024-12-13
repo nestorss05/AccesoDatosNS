@@ -14,13 +14,13 @@ public class ClsCompras {
 	}
 	
 	public ClsCompras(int idCompra, int idPlayer, int idGames, String cosa, float precio, String date) {
-		if (idCompra >= 1) {
+		if (idCompra >= 0) {
 			this.idCompra = idCompra;
 		}
-		if (idPlayer >= 1) {
+		if (idPlayer >= 0) {
 			this.idPlayer = idPlayer;
 		}
-		if (idGames >= 1) {
+		if (idGames >= 0) {
 			this.idGames = idGames;
 		}
 		if (cosa != null && !cosa.equals("")) {
@@ -41,7 +41,7 @@ public class ClsCompras {
 	}
 
 	public void setIdCompra(int idCompra) {
-		if (idCompra >= 1) {
+		if (idCompra >= 0) {
 			this.idCompra = idCompra;
 		}
 	}
@@ -51,7 +51,7 @@ public class ClsCompras {
 	}
 
 	public void setIdPlayer(int idPlayer) {
-		if (idPlayer >= 1) {
+		if (idPlayer >= 0) {
 			this.idPlayer = idPlayer;
 		}
 	}
@@ -61,7 +61,7 @@ public class ClsCompras {
 	}
 
 	public void setIdGames(int idGames) {
-		if (idGames >= 1) {
+		if (idGames >= 0) {
 			this.idGames = idGames;
 		}
 	}

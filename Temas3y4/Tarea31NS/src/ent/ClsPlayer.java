@@ -12,7 +12,7 @@ public class ClsPlayer {
 	}
 	
 	public ClsPlayer(int idPlayer, String nick, String password, String email) {
-		if (idPlayer > 0) {
+		if (idPlayer >= 0) {
 			this.idPlayer = idPlayer;
 		}
 		if (nick != null && !nick.equals("")) {
@@ -31,7 +31,7 @@ public class ClsPlayer {
 	}
 
 	public void setIdPlayer(int idPlayer) {
-		if (idPlayer >= 1) {
+		if (idPlayer >= 0) {
 			this.idPlayer = idPlayer;
 		}
 	}

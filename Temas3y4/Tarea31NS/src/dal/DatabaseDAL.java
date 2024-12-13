@@ -412,6 +412,8 @@ public class DatabaseDAL {
 	 */
 	public static boolean insertar(int opc) {
 		
+		// NOTA: Queria meter las IDs autoincrementadas ya que se me olvido ponerlas anteriormente, pero no me dio tiempo y no es plan de entregar tarde este proyecto. Es lo ultimo que falta aqui
+		
 		// Booleana que indica si hay datos incompletos introducidos por el usuario
 		incompleto = false;
 		
@@ -435,21 +437,27 @@ public class DatabaseDAL {
 			
 			// Insert en la tabla player
 			case 1 -> {
-				player = pedirJugador(true);
+				player = pedirJugador(true, false);
 				noExiste = noExisteID(player.getIdPlayer(), 1);
 				sql = "INSERT INTO player VALUES (" + player.getIdPlayer() + ", '" + player.getNick() + "', '" + player.getPassword() + "', '" + player.getEmail() + "')";
 			}
 			
 			// Insert en la tabla compras
 			case 2 -> {
-				compra = pedirCompra(true);
-				noExiste = noExisteID(compra.getIdCompra(), compra.getIdPlayer(), compra.getIdGames());
+				compra = pedirCompra(true, false);
+				
+				if (compra.getIdGames() == 0 || compra.getIdPlayer() == 0) {
+					noExiste = 2;
+				} else {
+					noExiste = noExisteID(compra.getIdCompra(), compra.getIdPlayer(), compra.getIdGames());
+				}
+				
 				sql = "INSERT INTO compras VALUES (" + compra.getIdCompra() + ", " + compra.getIdPlayer() + ", " + compra.getIdGames() + ", '" + compra.getCosa() + "', " + compra.getPrecio() + ", '" + compra.getDate() + "')";
 			}
 			
 			// Insert en la tabla games
 			case 3 -> {
-				game = pedirJuego(true);
+				game = pedirJuego(true, false);
 				noExiste = noExisteID(game.getIdGames(), 3);
 				sql = "INSERT INTO games VALUES (" + game.getIdGames() + ", '" + game.getNombre() + "', '" + game.getTiempoJugado() + "')";
 			}
@@ -474,6 +482,10 @@ public class DatabaseDAL {
 					System.err.println("ERROR: el ID de jugador y/o el ID de juegos no existen en la DB. Crealos primero y vuelva a intentarlo. (0x15)");
 				}
 				
+				case -2 -> {
+					System.err.println("ERROR: IDs de juego y jugador invalidos (0x2b)");
+				}
+				
 				}
 				
 			}
@@ -492,7 +504,7 @@ public class DatabaseDAL {
 	 * @param idRequired ID obligatorio o no
 	 * @return Jugador con datos insertados por el usuario
 	 */
-	private static ClsPlayer pedirJugador(boolean idRequired) {
+	private static ClsPlayer pedirJugador(boolean idRequired, boolean borrado) {
 		
 		// Datos del jugador
 		int id = 0;
@@ -506,12 +518,19 @@ public class DatabaseDAL {
 			if (idRequired) {
 				System.out.println("Inserta el ID del jugador");
 				id = Main.sc.nextInt();
-				Main.sc.nextLine();
+				if (id == 0) {
+					if (borrado) {
+						System.out.println("ID saltado");
+					} else {
+						System.err.println("ERROR: el ID no se puede saltar. Puede que la operacion salga mal.");
+					}
+				} 
 			} else {
 				id = 0;
 			}
 			
 			// Pide al usuario el nick del jugador
+			Main.sc.nextLine();
 			System.out.println("Inserta el nickname del jugador");
 			nick = Main.sc.nextLine();
 			if (!idRequired && nick.equals("")) {
@@ -552,7 +571,7 @@ public class DatabaseDAL {
 	 * @param idRequired ID obligatorio o no
 	 * @return Compra con datos insertados por el usuario
 	 */
-	private static ClsCompras pedirCompra(boolean idRequired) {
+	private static ClsCompras pedirCompra(boolean idRequired, boolean borrado) {
 		
 		// Datos de la compra
 		int idCompra = 0;
@@ -568,6 +587,13 @@ public class DatabaseDAL {
 			if (idRequired) {
 				System.out.println("Inserta el ID de la compra");
 				idCompra = Main.sc.nextInt();
+				if (idCompra == 0) {
+					if (borrado) {
+						System.out.println("ID saltado");
+					} else {
+						System.err.println("ERROR: el ID no se puede saltar. Puede que la operacion salga mal.");
+					}
+				} 
 			} else {
 				idCompra = 0;
 			}
@@ -576,10 +602,28 @@ public class DatabaseDAL {
 			System.out.println("Inserta el ID del jugador");
 			idPlayer = Main.sc.nextInt();
 			
+			// Control para idPlayer en 0 (skipper)
+			if (idPlayer == 0) {
+				if (!idRequired || borrado) {
+					System.out.println("ID del jugador saltado");
+				} else {
+					System.err.println("ERROR: ID del jugador invalido. (0x2a)");
+				}
+			}
+			
 			// Pide al usuario el ID del juego
 			System.out.println("Inserta el ID del juego");
 			idGames = Main.sc.nextInt();
 			Main.sc.nextLine();
+			
+			// Control para idGames en 0 (skipper)
+			if (idGames == 0) {
+				if (!idRequired || borrado) {
+					System.out.println("ID del juego saltado");
+				} else {
+					System.err.println("ERROR: ID del juego invalido. (0x2c)");
+				}
+			}
 			
 			// Pide al usuario la descripcion de la compra
 			System.out.println("Inserta la descripcion de la compra");
@@ -620,7 +664,7 @@ public class DatabaseDAL {
 	 * @param idRequired ID obligatorio o no
 	 * @return Juego con datos insertados por el usuario
 	 */
-	private static ClsGames pedirJuego(boolean idRequired) {
+	private static ClsGames pedirJuego(boolean idRequired, boolean borrado) {
 		
 		// Datos del juego
 		int id = 0;
@@ -633,12 +677,19 @@ public class DatabaseDAL {
 			if (idRequired) {
 				System.out.println("Inserta el ID del juego");
 				id = Main.sc.nextInt();
-				Main.sc.nextLine();
+				if (id == 0) {
+					if (borrado) {
+						System.out.println("ID saltado");
+					} else {
+						System.err.println("ERROR: el ID no se puede saltar. Puede que la operacion salga mal.");
+					}
+				} 
 			} else {
 				id = 0;
 			}
 			
 			// Pide al usuario el nombre del juego
+			Main.sc.nextLine();
 			System.out.println("Inserta el nombre del juego");
 			nombre = Main.sc.nextLine();
 			if (!idRequired && nombre.equals("")) {
@@ -676,7 +727,7 @@ public class DatabaseDAL {
 	 * 1 = el ID no existe
 	 */
 	private static int noExisteID(int id, int opc) {
-		
+				
 		// Salida que da el ResultSet
 		int salida = 0;
 		
@@ -760,7 +811,7 @@ public class DatabaseDAL {
 	 * 1 = idCompra no existe
 	 */
 	private static int noExisteID(int idCompra, int idPlayer, int idGames) {
-				
+		
 		// Salida que da el ResultSet
 		int salida = 0;
 		
@@ -770,18 +821,18 @@ public class DatabaseDAL {
 		// Comprueba que no existe la ID de compra
 		salida = noExisteID(idCompra, 2);
 		
-		if (salida == 0) {
+		if (salida == 1) {
 			
 			// Comprueba la existencia de la ID del jugador en caso de que la ID de compra no exista
 			salida = noExisteID(idPlayer, 1);
 			
-			if (salida == 1) {
+			if (salida == 0) {
 				
 				// Comprueba la existencia de la ID del juego en caso de que la ID de juego exista
 				salida = noExisteID(idGames, 3);
 				
 				// Si los IDs de juego y compra existen, res sera 1 (idCompra no existe). De lo contrario, sera -1
-				if (salida == 1) {
+				if (salida == 0) {
 					res = 1;
 				} else {
 					res = -1;
@@ -885,6 +936,9 @@ public class DatabaseDAL {
 		// Comando SQL a ejecutar
 		String sql = "";
 		
+		// Comando inicial
+		String comandoInicial = "";
+		
 		// Variables de objetos
 		ClsPlayer player = new ClsPlayer();
 		ClsGames game = new ClsGames();
@@ -892,30 +946,52 @@ public class DatabaseDAL {
 		
 		try {
 			
+			// 1: Jugador, 2: Compra, 3: Juego
 			switch (opc) {
 			
 			case 1 -> {
-				// Lista los jugadores dependiendo de los parametros obtenidos
-				player = pedirJugador(false);
+				
+				// Pide los parametros del jugador
+				player = pedirJugador(false, false);
+				
+				// Comando SQL
 				sql = "SELECT * FROM player WHERE nick LIKE '%" + player.getNick() + "%' AND password LIKE '%" + player.getPassword() + "%' AND email LIKE '%" + player.getEmail() + "%'";
+				
+				// Lista los jugadores dependiendo de los parametros obtenidos
 				listarJugadores(sql);
+				
 			}
 			
 			case 2 -> {
+				
+				// Pide los parametros de la compra
+				System.out.println("NOTA: Si quieres saltarte las IDs, inserte un 0.");
+				compra = pedirCompra(false, false);
+				
+				// Comando SQL inicial
+				comandoInicial = "SELECT * FROM compras WHERE cosa LIKE '%" + compra.getCosa() + "%'";
+				
+				// Realiza las variaciones para los parametros de la compra
+				sql = pedirVariacionesParametrosCompras(comandoInicial, compra, false);
+				
 				// Lista las compras dependiendo de los parametros obtenidos
-				compra = pedirCompra(false);
-				sql = "SELECT * FROM compras WHERE cosa LIKE '%" + compra.getCosa() + "%'";
-				// TODO: IDs de jugador, juego y precio: ¿Igual, mayor, mayorIgual, menor o menorIgual?
-				// TODO: Fecha de compra: filtrado a base de año, mes y dia?
 				listarCompras(sql);
 			}
 			
 			case 3 -> {
+				
+				// Pide los parametros del juego
+				game = pedirJuego(false, false);
+				
+				// Comando SQL inicial
+				comandoInicial = "SELECT * FROM games WHERE nombre LIKE '%" + game.getNombre() + "%'";
+				
+				// Realiza las variaciones para los parametros del juego
+				sql = pedirVariacionesParametrosJuego(comandoInicial, game, false);
+				
 				// Lista los juegos dependiendo de los parametros obtenidos
-				game = pedirJuego(false);
-				sql = "SELECT * FROM games WHERE nombre LIKE '%" + game.getNombre() + "%' AND tiempoJugado LIKE '%" + game.getTiempoJugado() + "%'";
-				// TODO: tiempoJugado: filtrado a base de horas, minutos y segundos?
 				listarJuegos(sql);
+				
 			}
 			
 			}
@@ -926,6 +1002,10 @@ public class DatabaseDAL {
 		
 	}
 	
+	/**
+	 * Metodo que se conecta a la BD y lista los jugadores
+	 * @param sql comando SQL a ejecutar
+	 */
 	private static void listarJugadores(String sql) {
 		PreparedStatement pstmt;
 		try {
@@ -944,6 +1024,10 @@ public class DatabaseDAL {
 		}
 	}
 	
+	/**
+	 * Metodo que se conecta a la BD y lista las compras
+	 * @param sql comando SQL a ejecutar
+	 */
 	private static void listarCompras(String sql) {
 		PreparedStatement pstmt;
 		try {
@@ -964,6 +1048,10 @@ public class DatabaseDAL {
 		}
 	}
 	
+	/**
+	 * Metodo que se conecta a la BD y lista los juegos
+	 * @param sql comando SQL a ejecutar
+	 */
 	private static void listarJuegos(String sql) {
 		PreparedStatement pstmt;
 		try {
@@ -979,6 +1067,245 @@ public class DatabaseDAL {
 		} catch (SQLException e) {
 			System.err.println("ERROR: error a la hora de mostrar datos (0x16)");
 		}
+	}
+	
+	/**
+	 * Metodo que pide al usuario la variacion para el ID del jugador a eliminar
+	 * 
+	 * @param res codigo SQL inicial
+	 * @param player jugador escogido
+	 * @return Codigo SQL final
+	 */
+	private static String pedirVariacionIdJugador(String res, ClsPlayer player) {
+		
+		// Opcion escogida por el usuario
+		int opc;
+		
+		// Pide al usuario si el ID de juego deberia ser mayor o menor
+		System.out.println("ID de juego: ¿Mayor o menor?");
+		opc = pedirOpcPorParametros(1);
+		
+		// Switch: 1 - menor, 2 - mayor
+		switch (opc) {
+		
+		case 2 -> {
+			res += " AND idPlayer > " + player.getIdPlayer();
+		}
+		
+		default -> {
+			res += " AND idPlayer < " + player.getIdPlayer();
+		}
+		
+		}
+		
+		// Devuelve el comando SQL
+		return res;
+		
+	}
+	
+	/**
+	 * Metodo que pide al usuario los comparadores para numeros y fechas de una compra
+	 * @param res codigo SQL inicial
+	 * @param compra compra escogida
+	 * @return Codigo SQL final
+	 */
+	private static String pedirVariacionesParametrosCompras(String res, ClsCompras compra, boolean hayID) {
+		
+		// Opcion escogida por el usuario
+		int opc;
+		
+		// Si hayID es true, pide al usuario si el ID de compra deberia ser mayor o menor
+		if (hayID || compra.getIdCompra() >= 1) {
+			
+			System.out.println("ID de compra: ¿Mayor o menor?");
+			opc = pedirOpcPorParametros(1);
+			
+			// Switch: 1 - menor, 2 - mayor
+			switch (opc) {
+			
+			case 2 -> {
+				res += " AND idCompra < " + compra.getIdCompra();
+			}
+			
+			default -> {
+				res += " AND idCompra > " + compra.getIdCompra();
+			}
+			
+			}
+			
+		}
+		
+		// Pide al usuario si el ID de jugador deberia ser mayor o menor
+		if (compra.getIdPlayer() >= 1) {
+			System.out.println("ID de jugador: ¿Mayor o menor?");
+			opc = pedirOpcPorParametros(1);
+			
+			// Switch: 1 - menor, 2 - mayor
+			switch (opc) {
+			
+			case 2 -> {
+				res += " AND idPlayer > " + compra.getIdPlayer();
+			}
+			
+			default -> {
+				res += " AND idPlayer < " + compra.getIdPlayer();
+			}
+			
+			}
+		} else {
+			System.out.println("ID de jugador saltado (es 0)");
+		}
+		
+		// Pide al usuario si el ID de juego deberia ser mayor o menor
+		if (compra.getIdGames() >= 1) {
+			System.out.println("ID de juego: ¿Mayor o menor?");
+			opc = pedirOpcPorParametros(1);
+			
+			// Switch: 1 - menor, 2 - mayor
+			switch (opc) {
+			
+			case 2 -> {
+				res += " AND idGames > " + compra.getIdGames();
+			}
+			
+			default -> {
+				res += " AND idGames < " + compra.getIdGames();
+			}
+			
+			}
+		} else {
+			System.out.println("ID de juego saltado (es 0)");
+		}
+		
+		// Pide al usuario si el precio deberia ser mayor o menor
+		System.out.println("Precio: ¿Mayor o menor?");
+		opc = pedirOpcPorParametros(1);
+		
+		// Switch: 1 - menor, 2 - mayor
+		switch (opc) {
+		
+		case 2 -> {
+			res += " AND precio < " + compra.getPrecio();
+		}
+		
+		default -> {
+			res += " AND precio > " + compra.getPrecio();
+		}
+		
+		}
+		
+		// Pide al usuario si la fecha de compra deberia ser mayor o menor
+		System.out.println("Fecha de compra: ¿Antes o despues?");
+		opc = pedirOpcPorParametros(2);
+		
+		// Switch: 1 - menor, 2 - mayor
+		switch (opc) {
+		
+		case 2 -> {
+			res += " AND FechaCompra > " + compra.getDate();
+		}
+		
+		default -> {
+			res += " AND FechaCompra < " + compra.getDate();
+		}
+		
+		}
+		
+		// Devuelve la frase SQL final
+		return res;
+	}
+	
+	/**
+	 * Metodo que pide al usuario los comparadores para numeros y fechas de un juego
+	 * @param sql codigo SQL inicial
+	 * @param game juego escogido
+	 * @return Codigo SQL final
+	 */
+	private static String pedirVariacionesParametrosJuego(String res, ClsGames game, boolean hayID) {
+				
+		// Opcion escogida por el usuario
+		int opc;
+		
+		// Si hayID es true, pide al usuario si el ID de compra deberia ser mayor o menor
+		if (hayID || game.getIdGames() >= 1) {
+			
+			System.out.println("ID de juego: ¿Mayor o menor?");
+			opc = pedirOpcPorParametros(1);
+			
+			// Switch: 1 - menor, 2 - mayor
+			switch (opc) {
+			
+			case 2 -> {
+				res += " AND idGames > " + game.getIdGames();
+			}
+			
+			default -> {
+				res += " AND idGames < " + game.getIdGames();
+			}
+			
+			}
+			
+		}
+		
+		// Pide al usuario si el tiempo jugado deberia ser mayor o menor
+		System.out.println("Tiempo jugado: ¿Antes o despues?");
+		opc = pedirOpcPorParametros(2);
+		
+		// Switch: 1 - menor, 2 - mayor
+		switch (opc) {
+		
+		case 2 -> {
+			res += " AND tiempoJugado > '" + game.getTiempoJugado() + "'";
+		}
+		
+		default -> {
+			res += " AND tiempoJugado < '" + game.getTiempoJugado() + "'";
+		}
+		
+		}
+		
+		// Devuelve la frase SQL final
+		return res;
+	}
+	
+	/**
+	 * Metodo que pide la opcion de listado / borrado por parametros
+	 * @param opc opcion que depende unicamente en como se muestre el texto por pantalla (numero o fecha)
+	 * @return opcion seleccionada por el usuario
+	 */
+	private static int pedirOpcPorParametros(int opc) {
+		
+		// Opcion seleccionada
+		int res = 0;
+		
+		// Muestra el texto dependiendo de la opcion seleccionada
+		switch (opc) {
+		
+		// Case 1: numero
+		case 1 -> {
+			System.out.println("1. Mayor (predeterminado)");
+			System.out.println("2. Menor");
+		}
+		
+		// Case 2: fecha
+		case 2 -> {
+			System.out.println("1. Antes (predeterminado)");
+			System.out.println("2. Despues");
+		}
+		
+		}
+		
+		// Pide al usuario la opcion
+		try {
+			res = Main.sc.nextInt();
+		} catch (InputMismatchException e) {
+			System.err.println("ERROR: opcion de select interna invalida. Se escogera la opcion 1 (0x2b)");
+			res = 1;
+		}
+		
+		// Devuelve la opcion seleccionada
+		return res;
+		
 	}
 	
 	/**
@@ -1014,21 +1341,21 @@ public class DatabaseDAL {
 			
 			case 1 -> {
 				// Pide un jugador y comprueba su existencia
-				player = pedirJugador(true);
+				player = pedirJugador(true, false);
 				noExiste = noExisteID(player.getIdPlayer(), 1);
 				sql = "UPDATE player SET nick = '" + player.getNick() + "', password = '" + player.getPassword() + "', email = '" + player.getEmail() + "' WHERE idPlayer = " + player.getIdPlayer();
 			}
 			
 			case 2 -> {
 				// Pide una compra y comprueba su existencia
-				compra = pedirCompra(true);
+				compra = pedirCompra(true, false);
 				noExiste = noExisteID(compra.getIdCompra(), compra.getIdPlayer(), compra.getIdGames());
 				sql = "UPDATE compras SET idPlayer = '" + compra.getIdPlayer() + "', idGames = '" + compra.getIdGames() + "', cosa = '" + compra.getCosa() + "', precio = '" + compra.getPrecio() + "', FechaCompra = '" + compra.getDate() + "' WHERE idCompra = " + compra.getIdCompra();
 			}
 			
 			case 3 -> {
 				// Pide un juego y comprueba su existencia
-				game = pedirJuego(true);
+				game = pedirJuego(true, false);
 				noExiste = noExisteID(game.getIdGames(), 3);
 				sql = "UPDATE games SET nombre = '" + game.getNombre() + "', tiempoJugado = '" + game.getTiempoJugado() + "' WHERE idGames = " + game.getIdGames();
 			}
@@ -1081,7 +1408,7 @@ public class DatabaseDAL {
 	 * @return Resultado de la operacion
 	 */
 	public static boolean borrar(int opc) {
-		
+				
 		// Resultado de la operacion a mostrar
 		boolean res = false;
 		
@@ -1090,6 +1417,9 @@ public class DatabaseDAL {
 		
 		// Comando SQL a ejecutar
 		String sql = "";
+		
+		// Comando inicial (solo borrado por parametros)
+		String comandoInicial = "";
 		
 		// Opciones secundarias y terciarias de borrado
 		int opc2 = 0;
@@ -1100,6 +1430,12 @@ public class DatabaseDAL {
 		
 		// ID del objeto introducido por el usuario
 		int idObjeto = 0;
+		
+		// Variables de objetos
+		ClsPlayer playerx = new ClsPlayer();
+		ClsGames game = new ClsGames();
+		ClsCompras compra = new ClsCompras();
+		
 		try {
 			
 			java.sql.Statement stmt = conn.createStatement();
@@ -1115,16 +1451,13 @@ public class DatabaseDAL {
 					
 					// Borra la tabla player en caso de que no exista la tabla compras
 					if (!compras) {
-						System.out.println("¿Estas seguro de realizar la operacion? (S/N)");
-						respuestaCommit = Main.sc.nextLine().toUpperCase();
 						
-						if (respuestaCommit.equals("S")) {
-							sql = "DROP TABLE player";
-				            stmt.executeUpdate(sql);
-				            res = true;
-						} else {
-							System.out.println("Operacion cancelada por el usuario.");
-						}
+						// Comando SQL
+						sql = "DROP TABLE player";
+						
+						// Procede a la eliminacion del elemento
+						res = borradoFinalTablaUnica(sql, true, stmt, 0);
+						
 					} else {
 						System.err.println("ERROR: dependencia de la tabla escogida en la FK de la tabla COMPRAS (0x20)");
 					}
@@ -1145,30 +1478,34 @@ public class DatabaseDAL {
 						// Comprueba la existencia de la ID
 						noExiste = noExisteID(idObjeto, 1);
 						
-						// Pide al usuario la confirmacion de la operacion
-						System.out.println("¿Estas seguro de realizar la operacion? (S/N)");
-						respuestaCommit = Main.sc.nextLine().toUpperCase();
+						// Comando SQL
+						sql = "DELETE FROM player WHERE idPlayer = " + idObjeto;
 						
-						// Borra el jugador
-						if (respuestaCommit.equals("S")) {
-							sql = "DELETE FROM player WHERE idPlayer = " + idObjeto;
-							if (noExiste == 0) {
-								stmt.executeUpdate(sql);
-					            res = true;
-							} else {
-								System.err.println("ERROR: el jugador no ha sido encontrado. Borrado anulado (0x25)");
-							}
-						} else {
-							System.out.println("Operacion cancelada por el usuario.");
-						}
 					}
 					
 					case 2 -> {
-						// TODO: borrado con parametros
-						System.err.println("ERROR: no implementado");
+						
+						// Pide el jugador
+						playerx = pedirJugador(true, true);
+						
+						// Frase SQL inicial
+						comandoInicial = "DELETE FROM player WHERE nick LIKE '%" + playerx.getNick() + "%' AND password LIKE '%" + playerx.getPassword() + "%' AND email LIKE '%" + playerx.getEmail() + "%'";
+						
+						// Pide al usuario la variacion del ID del jugador, pero solo si el ID es 1 o mayor
+						if (playerx.getIdPlayer() >= 1) {
+							sql = pedirVariacionIdJugador(comandoInicial, playerx);
+						}
+						
+						// Comprueba la existencia de la ID del jugador
+						noExiste = noExisteID(playerx.getIdPlayer(), 1);
+						
 					}
 					
 					}
+					
+					// Procede a la eliminacion del elemento
+					res = borradoFinalTablaUnica(sql, false, stmt, noExiste);
+					
 				}
 				
 				}
@@ -1182,17 +1519,11 @@ public class DatabaseDAL {
 				
 				case 1 -> {
 					
-					// Dropea la tabla compras
-					System.out.println("¿Estas seguro de realizar la operacion? (S/N)");
-					respuestaCommit = Main.sc.nextLine().toUpperCase();
+					// Comando SQL
+					sql = "DROP TABLE compras";
 					
-					if (respuestaCommit == "S") {
-						sql = "DROP TABLE compras";
-			            stmt.executeUpdate(sql);
-			            res = true;
-					} else {
-						System.out.println("Operacion cancelada por el usuario.");
-					}
+					// Procede a la eliminacion del elemento
+					res = borradoFinalTablaUnica(sql, true, stmt, 0);
 					
 				}
 				
@@ -1210,30 +1541,32 @@ public class DatabaseDAL {
 						// Comprueba la existencia de la ID
 						noExiste = noExisteID(idObjeto, 2);
 						
-						// Pide al usuario la confirmacion de la operacion
-						System.out.println("¿Estas seguro de realizar la operacion? (S/N)");
-						respuestaCommit = Main.sc.nextLine().toUpperCase();
+						// Comando SQL
+						sql = "DELETE FROM compras WHERE idCompra = " + idObjeto;
 						
-						// Borra la compra
-						if (respuestaCommit.equals("S")) {
-							sql = "DELETE FROM compras WHERE idCompra = " + idObjeto;
-							if (noExiste == 0) {
-								stmt.executeUpdate(sql);
-					            res = true;
-							} else {
-								System.err.println("ERROR: la compra no ha sido encontrada. Borrado anulado (0x26)");
-							}
-						} else {
-							System.out.println("Operacion cancelada por el usuario.");
-						}
 					}
 					
 					case 2 -> {
-						// TODO: borrado con parametros
-						System.err.println("ERROR: no implementado");
+												
+						// Pide la compra
+						compra = pedirCompra(true, true);
+						
+						// Comando SQL inicial de la compra
+						comandoInicial = "DELETE FROM compras WHERE cosa LIKE '%" + compra.getCosa() + "%'";
+						
+						// Pide al usuario la variacion de algunos parametros de la compra
+						sql = pedirVariacionesParametrosCompras(comandoInicial, compra, true);
+						
+						// Comprueba la existencia de la ID de la compra
+						noExiste = noExisteID(compra.getIdCompra(), 2);
+						
 					}
 					
 					}
+					
+					// Procede a la eliminacion del elemento
+					res = borradoFinalTablaUnica(sql, false, stmt, noExiste);
+					
 				}
 				
 				}
@@ -1249,16 +1582,13 @@ public class DatabaseDAL {
 					
 					// Si la tabla compras no existe, procede con el dropeo
 					if (!compras) {
-						System.out.println("¿Estas seguro de realizar la operacion? (S/N)");
-						respuestaCommit = Main.sc.nextLine().toUpperCase();
 						
-						if (respuestaCommit == "S") {
-							sql = "DROP TABLE games";
-				            stmt.executeUpdate(sql);
-				            res = true;
-						} else {
-							System.out.println("Operacion cancelada por el usuario.");
-						}
+						// Comando SQL
+						sql = "DROP TABLE games";
+						
+						// Procede a la eliminacion del elemento
+						res = borradoFinalTablaUnica(sql, true, stmt, 0);
+						
 					} else {
 						System.err.println("ERROR: dependencia de la tabla escogida en la FK de la tabla COMPRAS (0x20)");
 					}
@@ -1279,30 +1609,32 @@ public class DatabaseDAL {
 						// Comprueba la existencia de la ID
 						noExiste = noExisteID(idObjeto, 3);
 						
-						// Pide al usuario la confirmacion de la operacion
-						System.out.println("¿Estas seguro de realizar la operacion? (S/N)");
-						respuestaCommit = Main.sc.nextLine().toUpperCase();
-						
-						// Borra el juego
-						if (respuestaCommit.equals("S")) {
-							sql = "DELETE FROM games WHERE idGames = " + idObjeto;
-							if (noExiste == 0) {
-								stmt.executeUpdate(sql);
-					            res = true;
-							} else {
-								System.err.println("ERROR: el juego no ha sido encontrado. Borrado anulado (0x27)");
-							}
-						} else {
-							System.out.println("Operacion cancelada por el usuario.");
-						}
+						// Comando SQL
+						sql = "DELETE FROM games WHERE idGames = " + idObjeto;
+
 					}
 					
 					case 2 -> {
-						// TODO: borrado con parametros
-						System.err.println("ERROR: no implementado");
+						
+						// Pide el juego
+						game = pedirJuego(true, true);
+						
+						// Frase SQL inicial
+						comandoInicial = "DELETE FROM games WHERE nombre LIKE '%" + game.getNombre() + "%'";
+						
+						// Pide al usuario la variacion de algunos parametros del juego
+						sql = pedirVariacionesParametrosJuego(comandoInicial, game, true);
+						
+						// Comprueba la existencia de la ID del juego
+						noExiste = noExisteID(game.getIdGames(), 3);
+						
 					}
 					
 					}
+					
+					// Procede a la eliminacion del elemento
+					res = borradoFinalTablaUnica(sql, false, stmt, noExiste);
+					
 				}
 				
 				}
@@ -1311,16 +1643,23 @@ public class DatabaseDAL {
 			case 4 -> {
 				
 				// Dropea TODAS las tablas (cuando digo TODAS, es que TODAS)
+				Main.sc.nextLine();
 				System.out.println("¿Estas seguro de realizar la operacion? (S/N)");
 				respuestaCommit = Main.sc.nextLine().toUpperCase();
 				
-				if (respuestaCommit == "S") {
-					sql = "DROP TABLE compras";
-		            stmt.executeUpdate(sql);
-		            sql = "DROP TABLE player";
-		            stmt.executeUpdate(sql);
-		            sql = "DROP TABLE games";
-		            stmt.executeUpdate(sql);
+				if (respuestaCommit.equals("S")) {
+					if (compras) {
+						sql = "DROP TABLE compras";
+			            stmt.executeUpdate(sql);
+					}
+					if (player) {
+						sql = "DROP TABLE player";
+			            stmt.executeUpdate(sql);
+					}
+					if (games) {
+						sql = "DROP TABLE games";
+			            stmt.executeUpdate(sql);
+					}
 		            res = true;
 				} else {
 					System.out.println("Operacion cancelada por el usuario.");
@@ -1339,10 +1678,58 @@ public class DatabaseDAL {
 	}
 	
 	/**
+	 * Metodo que realiza el borrado de una fila / tabla
+	 * @param sql comando SQL
+	 * @param total Drop / Delete
+	 * @param stmt ResultStatement
+	 * @param noExiste existencia del objeto
+	 * @return resultado de la operacion
+	 */
+	private static boolean borradoFinalTablaUnica(String sql, boolean total, java.sql.Statement stmt, int noExiste) {
+		
+		// Booleana que indica el resultado de la operacion
+		boolean res = false;
+		
+		// Respuesta del commit
+		String respuestaCommit;
+		
+		// Pide al usuario la confirmacion de la operacion
+		Main.sc.nextLine();
+		System.out.println("¿Estas seguro de realizar la operacion? (S/N)");
+		respuestaCommit = Main.sc.nextLine().toUpperCase();
+		
+		try {
+			
+			// Borra el jugador
+			if (respuestaCommit.equals("S")) {
+				if (total) {
+					stmt.executeUpdate(sql);
+		            res = true;
+				} else {
+					if (noExiste == 0) {
+						stmt.executeUpdate(sql);
+			            res = true;
+					} else {
+						System.err.println("ERROR: el elemento no ha sido encontrado. Borrado anulado (0x25)");
+					}
+				}
+			} else {
+				System.out.println("Operacion cancelada por el usuario.");
+			}
+			
+		} catch (SQLException e) {
+			System.err.println("ERROR: error a la hora de eliminar la tabla (0x21)");
+		}
+		
+		return res;
+		
+	}
+	
+	/**
 	 * Pide al usuario el ID de un objeto a eliminar
 	 * @return ID de borrado
 	 */
-	public static int pideIdBorrado() {
+	private static int pideIdBorrado() {
 		int idObjeto = 0;
 		try {
 			System.out.println("Inserta el ID");
@@ -1359,7 +1746,7 @@ public class DatabaseDAL {
 	 * Metodo que devuelve la opcion de borrado seleccionada
 	 * @return Opcion seleccionada
 	 */
-	public static int pedirOpcionBorrado() {
+	private static int pedirOpcionBorrado() {
 		int opc = 0;
 		try {
 			System.out.println("¿Deseas borrar toda la tabla o una serie de datos concretos?");
@@ -1370,7 +1757,7 @@ public class DatabaseDAL {
 				opc = 1;
 			}
 		} catch (InputMismatchException e) {
-			System.err.println("ERROR: opcion invalida. Se escogera la opcion 1");
+			System.err.println("ERROR: opcion invalida. Se escogera la opcion 1 (0x29)");
 			opc = 1;
 		}
 		return opc;
@@ -1380,7 +1767,7 @@ public class DatabaseDAL {
 	 * Metodo que devuelve la opcion seleccionado del borrado de tablas
 	 * @return Opcion seleccionada
 	 */
-	public static int pedirOpcionBorradoTabla() {
+	private static int pedirOpcionBorradoTabla() {
 		int opc = 0;
 		try {
 			System.out.println("¿Deseas borrar todos los datos de una fila o varias filas segun un filtro?");
@@ -1391,7 +1778,7 @@ public class DatabaseDAL {
 				opc = 1;
 			}
 		} catch (InputMismatchException e) {
-			System.err.println("ERROR: opcion invalida. Se escogera la opcion 1");
+			System.err.println("ERROR: opcion invalida. Se escogera la opcion 1 (0x27)");
 			opc = 1;
 		}
 		return opc;
