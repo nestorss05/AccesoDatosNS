@@ -11,7 +11,7 @@ public class Principal {
         instancia=new Accesobd();
         //ejemplo1a1();
         //ejemplo1a1bi();
-        ejemplo1amuchos();
+        //ejemplo1amuchos();
     }
 
     private static void ejemplo1amuchos() throws Exception {
