@@ -13,7 +13,7 @@
         <!--Seleccionamos el dialecto SQL-->
         <property name="dialect">org.hibernate.dialect.MariaDBDialect</property>
         <!-- Configurar SQL para salida estándar -->
-        <property name="show_sql">false</property>
+        <property name="show_sql">true</property>
         <!-- Establece el contexto de la sesion-->
         <property name="current_session_context_class">thread</property>
         <property name="hbm2ddl.auto">update</property>

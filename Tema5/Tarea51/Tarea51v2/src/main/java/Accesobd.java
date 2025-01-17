@@ -34,6 +34,13 @@ public class Accesobd {
         sf.close();
     }
 
+    public Session getSession() {
+        if (sesion == null || !sesion.isOpen()) {
+            throw new IllegalStateException("ERROR: La sesión no está abierta. Llama a abrir() primero.");
+        }
+        return sesion;
+    }
+
     public Object guardar(Object cosa) {
         return sesion.save(cosa);
     }
